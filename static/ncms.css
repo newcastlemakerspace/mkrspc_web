@@ -73,8 +73,19 @@ a {
 /* HEADER STUFF */
 
 #site-name {
-  margin: 0 10px;
-  text-align: right; 
+  margin: 10px 0;
+  text-align: right;
+  color: #ffffff;
+  text-shadow: 1px 1px 2px #444444;
+  font-size: 1.8em;
+}
+
+#user-greeting {
+  margin-left: 12px;
+  text-align: left;
+  color: #ffffff;
+  text-shadow: 1px 1px 2px #444444;
+  font-size: 0.8em;
 }
 
 #navigation {

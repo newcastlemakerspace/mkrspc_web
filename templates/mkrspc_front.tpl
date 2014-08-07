@@ -10,13 +10,19 @@
 </head>
 
 <body id="home">
+
     <div id='page'>
+
         <div id='header'>
-            <h1 id='site-name'>Newcastle Makerspace</h1>
+            <div id='site-name'>Newcastle Makerspace</div>
             <div id='navigation'>
+                <span id='user-greeting'> {{user_message}} </span>
                 {{!menu}}
             </div>
+
         </div> <!-- header -->
+
+
         <div id='page-content'>
 
             {{!main_content}}

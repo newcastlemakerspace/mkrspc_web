@@ -71,8 +71,14 @@ def _menu(selected, show_admin=True):
 
 
 def _user_greeting(req):
-    if _check_auth_cookie(req) is not None:
-        pass
+    user_info = _check_auth_cookie(req)
+    if user_info is not None:
+        if user_info[1]:
+            return "Hi %s" % user_info[0]
+        else:
+            return "Greetings %s" % user_info[0]
+    else:
+        return ""
 
 
 @app.route('/static/<filepath:path>')
@@ -86,7 +92,8 @@ def index():
 
     context = {
         'title': "Home - Newcastle Makerspace",
-        'menu': _menu('sel_home')
+        'menu': _menu('sel_home'),
+        'user_message': _user_greeting(request)
     }
 
     with open('content/home.html', 'r') as content_file:
@@ -100,7 +107,8 @@ def about():
 
     context = {
         'title': "About - Newcastle Makerspace",
-        'menu': _menu('sel_about')
+        'menu': _menu('sel_about'),
+        'user_message': _user_greeting(request)
     }
 
     with open('content/about.html', 'r') as content_file:
@@ -115,7 +123,8 @@ def about():
 
     context = {
         'title': "Contact - Newcastle Makerspace",
-        'menu': _menu('sel_contact')
+        'menu': _menu('sel_contact'),
+        'user_message': _user_greeting(request)
     }
 
     with open('content/contact.html', 'r') as content_file:
@@ -132,7 +141,8 @@ def admin():
 
     context = {
         'title': "Administration - Newcastle Makerspace",
-        'menu': _menu('sel_admin')
+        'menu': _menu('sel_admin'),
+        'user_message': _user_greeting(request)
     }
 
     with open('content/admin.html', 'r') as content_file:
@@ -193,7 +203,8 @@ def wiki(slug):
         'title': "Contact - Newcastle Makerspace",
         'menu': _menu('sel_wiki'),
         'main_content': html,
-        'editable': editable
+        'editable': editable,
+        'user_message': _user_greeting(request)
     }
 
     return template('templates/mkrspc_wiki', context)
