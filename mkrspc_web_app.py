@@ -86,7 +86,8 @@ def _user_greeting(req):
 
 @app.route('/static/<filepath:path>')
 def server_static(filepath):
-    return static_file(filepath, root='/home/felix/dev/makerspace/mkrspc_web/static')
+    configured_static_filepath = static_files_root
+    return static_file(filepath, root=configured_static_filepath)
 
 
 @app.route('/')
