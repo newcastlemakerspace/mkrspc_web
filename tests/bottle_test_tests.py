@@ -1,6 +1,8 @@
-from webtest import TestApp, TestResponse
 from unittest import TestCase
-import bottle_test
+
+from webtest import TestApp, TestResponse
+
+from tests import bottle_test
 
 
 class BottleTestTests(TestCase):

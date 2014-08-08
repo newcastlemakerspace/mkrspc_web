@@ -8,6 +8,9 @@ from bottle import static_file
 from bottle import FormsDict
 from collections import defaultdict
 
+from site_config import static_files_root, auth_salt_secret
+
+
 app = Bottle(catchall=False)
 
 def connect_redis():
@@ -152,11 +155,12 @@ def admin():
 
 @app.post('/login')
 def login_post():
-    # todo stop printing passwords when debugged
     login_form = request.forms
     assert isinstance(login_form, FormsDict)
-    print "login for [%s] with passwd [%s]" % (login_form.username, login_form.password)
-    print login_form.keys()
+
+    # todo never print passwords (after it's debugged....)
+    #print "login for [%s] with passwd [%s]" % (login_form.username, login_form.password)
+    #print login_form.keys()
 
     user = login_form.username
     passwd = login_form.password
@@ -165,9 +169,9 @@ def login_post():
     r = connect_redis()
     user_passwd_record = r.get('User_Pwd_%s' % user)
     if user_passwd_record is not None:
-        hash_object = hashlib.sha256(b'development_salt_do_not_use_in_production' + passwd)   # TODO: don't deploy with this salt!
+        hash_object = hashlib.sha256(auth_salt_secret + passwd)   # TODO: don't deploy with this salt!
         hex_dig = hash_object.hexdigest()
-        print(hex_dig)
+        #print(hex_dig)
         if hex_dig == user_passwd_record:
 
             # passwords match OK
