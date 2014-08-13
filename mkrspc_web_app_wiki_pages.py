@@ -64,17 +64,20 @@ def wiki(slug):
         editable = True
 
     r = connect_redis()
-    md_src = r.get('wiki_' + slug)
+    art_id = r.get('wiki_slug_' + slug)
 
-    if md_src is None:
+    if art_id is None:
         html = "Missing article - %s" % slug
     else:
+        md_src = r.get('wiki_article_' + art_id)
+        art_title = r.get('wiki_article_title_' + art_id)
+        art_slug = r.get('wiki_article_slug_' + art_id)
         md = markdown.Markdown(extensions=['wikilinks(base_url=/wiki/,html_class=myclass)'])
         #html = markdown.markdown(md_src, ['wikilinks(base_url=/wiki/)'])
         html = md.convert(md_src)
 
     context = {
-        'title': "Wiki - Newcastle Makerspace",
+        'title': u"Wiki - Newcastle Makerspace",
         'menu': menu('sel_wiki', user_info, nav_style='wiki'),
         'main_content': html,
         'allow_edit': editable,
@@ -98,17 +101,20 @@ def wiki_edit_page(slug):
     if user_info is not None:
         editable = True
     else:
-        site_message = "Sorry, you do not have permission to edit this page."
+        site_message = u"Sorry, you do not have permission to edit this page."
 
     r = connect_redis()
-    md_src = r.get('wiki_' + slug)
+    art_id = r.get('wiki_slug_' + slug)
 
-    if md_src is None:
+    if art_id is None:
         html = "Missing article - %s" % slug
     else:
+        md_src = r.get('wiki_article_' + art_id)
+        art_title = r.get('wiki_article_title_' + art_id)
+        art_slug = r.get('wiki_article_slug_' + art_id)
         md = markdown.Markdown(extensions=['wikilinks(base_url=/wiki/,html_class=myclass)'])
         #html = markdown.markdown(md_src, ['wikilinks(base_url=/wiki/)'])
-        html = md.convert(md_src)
+        html = '<h4 class="page-title">Editing article: "%s" (%s)</h4>' % (art_title, art_slug)
 
     context = {
         'title': "Wiki - Newcastle Makerspace",
@@ -118,6 +124,8 @@ def wiki_edit_page(slug):
         'user_message': user_greeting(user_info),
         'wiki_index': categories,
         'site_message': site_message,
+        'article_id': art_id,
+        'article_title': art_title,
         'article_markdown': md_src
     }
 
@@ -132,27 +140,39 @@ def wiki_subcat(subcat_id, site_message=None):
     if user_info is not None:
         editable = True
 
-    r = connect_redis()
-    articles = r.lrange('wiki_articles_' + subcat_id, 0, 999)
-    for art_key in articles:
-        print("Wiki article: %s" % (art_key))
-
     subcat_name = None
     maincat_name = None
 
-    print('=================', subcat_id)
     for c in categories:
-        print('cat ', c)
         for sc in c[2]:
-            print(' subcat ', sc)
             if sc[0] == subcat_id:
-                print("Found the requested subcat!", sc[0], sc[1])
-                print("It was in cat %s!" % c[1])
                 subcat_name = sc[1]
                 maincat_name = c[1]
 
-    html = "<h3>Wiki > %s > %s</h3>" % (maincat_name, subcat_name)
+    print("looking for articles:")
 
+    html = [u'<h3 class="page-title">Wiki > %s > %s</h3>' % (maincat_name, subcat_name)]
+    html += u'<p>'
+    r = connect_redis()
+    articles = r.lrange('wiki_subcat_articles_' + subcat_id, 0, 999)
+    html += u"%d articles<br/>" % len(articles)
+    for art_id in articles:
+        print(art_id)
+        art_key = 'wiki_article_%s' % art_id
+        art_body_markdown = r.get(art_key)
+
+        art_slug_key = 'wiki_article_slug_%s' % art_id
+        art_slug = r.get(art_slug_key)
+
+        art_title_key = 'wiki_article_title_%s' % art_id
+        art_title = r.get(art_title_key)
+
+        html += u"Wiki article %s<br/>" % art_key
+        #html += u"Title: [%s]" % art_title
+        html += u'<a href="/wiki/%s">/wiki/%s</a><br/>' % (art_slug, art_title)
+        #html += u" characters: [%d] <br/>" % len(art_body_markdown)
+    html += u'</p>'
+    html = u"".join(html)
 
     context = {
         'title': "Wiki - Newcastle Makerspace",
@@ -166,6 +186,31 @@ def wiki_subcat(subcat_id, site_message=None):
     }
 
     return template('templates/wiki_subcat', context)
+
+
+@wiki_app.post('/wiki/update_article')
+def wiki_update_article():
+    # form is defined in wiki_edit.tpl
+    article_form = request.forms
+    assert isinstance(article_form, FormsDict)
+    article_name = article_form.article_title.strip()
+    article_body = article_form.article_markdown.strip()
+    article_id = article_form.article_id
+
+    r = connect_redis()
+    old_article_body = r.get('wiki_article_' + article_id)
+    # save the old revision before doing anything else
+    r.lpush('wiki_article_revision_%s' % article_id, old_article_body)
+
+    # slugs never change
+    art_slug = r.get('wiki_article_slug_%s' % article_id)
+
+    r.set('wiki_article_title_%s' % article_id, article_name)
+    r.set('wiki_article_%s' % article_id, article_body)
+
+    redirect('/wiki/%s' % art_slug)
+
+    #todo logging edit actions
 
 
 @wiki_app.post('/wiki/new_article')
@@ -204,8 +249,11 @@ def wiki_new_article():
     default_text = """**%s** (New article)""" % article_name
     r = connect_redis()
     article_id = str(uuid.uuid4())
-    r.set('wiki_article_%s' % article_id, default_text)
-    r.set('wiki_article_slug_%s', article_id)
+    art_key = 'wiki_article_%s' % article_id
+    r.set(art_key, default_text)
+    r.set('wiki_slug_%s' % article_slug, article_id)
+    r.set('wiki_article_slug_%s' % article_id, article_slug)
+    r.set('wiki_article_title_%s' % article_id, article_name)
     r.lpush("wiki_subcat_articles_%s" % subcat_id, article_id)
 
     # on error

@@ -4,7 +4,7 @@ html, body {
 
 body {
   height: 100%;
-  padding: 0.5em;
+  padding: 0em;
   font-family: "Fira Sans", "Open Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
   background: #000000 url('/static/background.png') bottom repeat-x;
   margin: 0px;
@@ -62,8 +62,8 @@ body {
 #navigation ul li.sibling :hover,
 #navigation ul li.sibling a:hover,
 #navigation ul li.sibling i.fa:hover {
-    color: Red;
-    text-shadow: 5px 5px 7px Red;
+    color: Chartreuse;
+    text-shadow: 5px 5px 7px Chartreuse;
 }
 
 #navigation ul li.sibling {
@@ -119,6 +119,10 @@ a {
   background: rgba(16,16,16,0.8);
 }
 
+#page-content p {
+  margin: 1em;
+}
+
 #page-content {
   margin-top: 1em;
   margin-right: 1%;
@@ -153,6 +157,13 @@ a {
   text-align: left;
 }
 
+#user-greeting-wiki {
+  margin-left: 12px;
+  text-align: left;
+  color: #ffffff;
+  text-shadow: 1px 1px 2px #444444;
+  font-size: 0.8em;
+}
 
 #user-greeting {
   margin-right: 12px;
@@ -160,6 +171,11 @@ a {
   color: #ffffff;
   text-shadow: 1px 1px 2px #444444;
   font-size: 0.8em;
+}
+
+div.adr {
+  margin-left: 2em;
+  font-weight: bold;
 }
 
 
@@ -195,6 +211,14 @@ form.loginform ul li.buttons{
     margin-top: 1em;
 }
 
+form.wiki-form ul {
+  list-style-type: none;
+  margin-top: 1em;
+}
+
+form.wiki-form ul li{
+  padding-top: 0.6em;
+}
 
 .ncms_buttons {
 	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #63b8ee), color-stop(1, #468ccf) );

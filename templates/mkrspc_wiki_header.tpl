@@ -32,10 +32,11 @@
         <div id="side-nav">
             <div id="header">
                 <h1 id="site-name" class="left">Newcastle <br/>Makerspace</h1>
+                %if user_message is not None:
+                    <div id="user-greeting-wiki"> {{!user_message}} </div>
+                %end
                 <div id="navigation">
-                    %if user_message is not None:
-                    <div id="user-greeting"> {{!user_message}} </div>
-                    %end
+
                     {{!menu}}
                 </div>
             </div> <!-- header -->

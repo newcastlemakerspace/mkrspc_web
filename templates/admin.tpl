@@ -41,7 +41,7 @@
 <div id='wiki_cat'>
     <p></p>
     <div id="wiki_cat_form_container">
-		<form id="add_wiki_category" class="loginform"  method="post" action="/wiki/add_category">
+		<form id="add_wiki_category" class="wiki-form" method="post" action="/wiki/add_category">
             <ul>
                 <li >
                     <label class="description" for="category_name">Category name</label>
@@ -62,7 +62,7 @@
 <div id='wiki_subcat'>
     <p></p>
     <div id="wiki_subcat_form_container">
-		<form id="add_wiki_subcategory" class="loginform"  method="post" action="/wiki/add_subcategory">
+		<form id="add_wiki_subcategory" class="wiki-form"  method="post" action="/wiki/add_subcategory">
             <ul>
 
                 <li >

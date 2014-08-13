@@ -17,11 +17,10 @@
 %if site_message is not None:
 {{!site_message}}
 %end
-
-            <div id="navigation">
 %if user_message is not None:
                 <div id="user-greeting">{{!user_message}}</div>
 %end
+            <div id="navigation">
                 {{!menu}}
             </div>
 

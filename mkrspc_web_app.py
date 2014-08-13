@@ -11,11 +11,12 @@ from bottle import FormsDict
 from collections import defaultdict
 
 from site_config import static_files_root, auth_salt_secret
-from site_utils import check_auth_cookie, connect_redis, remove_auth_cookie, menu, user_greeting, do_login, wiki_index
+from site_utils import check_auth_cookie, connect_redis, remove_auth_cookie, menu, user_greeting, do_login, wiki_index, check_db_version
 from mkrspc_web_app_wiki_pages import wiki_app
 
 app = Bottle(catchall=False)
 app.merge(wiki_app)
+
 
 @app.route('/static/<filepath:path>')
 def server_static(filepath):
@@ -25,6 +26,8 @@ def server_static(filepath):
 @app.route('/')
 @view('templates/home')
 def index(message=None):
+
+    check_db_version()
     user_info = check_auth_cookie(request)
     #print(user_info)
     if user_info is None:

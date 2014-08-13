@@ -6,11 +6,55 @@ from bottle import Request, response
 from collections import defaultdict
 from site_config import static_files_root, auth_salt_secret
 
+
 def connect_redis():
     # TODO connection pooling
     r = redis.StrictRedis(db=3)  # 3 for testing
     assert isinstance(r, redis.StrictRedis)
     return r
+
+
+def _make_user(username, password, redis_conn):
+    hash_object = hashlib.sha256(auth_salt_secret + password)
+    hex_dig = hash_object.hexdigest()
+    redis_conn.set('User_Pwd_%s' % username, hex_dig)
+
+
+def _init_wiki(redis_conn):
+    default_text = """Root article"""
+    article_slug = 'Index'
+    article_name = "Makerspace Wiki Index Page"
+    r = redis_conn
+    article_id = str(uuid.uuid4())
+    art_key = 'wiki_article_%s' % article_id
+    r.set(art_key, default_text)
+    r.set('wiki_slug_%s' % article_slug, article_id)
+    r.set('wiki_article_slug_%s' % article_id, article_slug)
+    r.set('wiki_article_title_%s' % article_id, article_name)
+
+
+def _init_superuser(redis_conn):
+    redis_conn.delete('mkrspc_superusers')
+    dkpw_passwd = u'password1'
+    dkpw_user = u'dkpw'
+    redis_conn.lpush('mkrspc_superusers', dkpw_user)
+    _make_user(dkpw_user, dkpw_passwd, redis_conn)
+
+    alice_passwd = u'puppies'
+    alice_user = u'alice'
+    _make_user(alice_user, alice_passwd, redis_conn)
+
+
+def check_db_version():
+    key = 'mkrspc_db_version'
+    r = connect_redis()
+    db_version = r.get(key)
+    if db_version is None:
+        db_version = "0.1.0"
+        r.set(key, db_version)
+        _init_superuser(r)
+        _init_wiki(r)
+    return db_version
 
 
 def do_login(user, passwd):
