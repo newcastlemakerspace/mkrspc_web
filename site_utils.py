@@ -1,0 +1,151 @@
+import redis
+import hashlib
+import uuid
+
+from bottle import Request, response
+from collections import defaultdict
+from site_config import static_files_root, auth_salt_secret
+
+def connect_redis():
+    # TODO connection pooling
+    r = redis.StrictRedis(db=3)  # 3 for testing
+    assert isinstance(r, redis.StrictRedis)
+    return r
+
+
+def do_login(user, passwd):
+    r = connect_redis()
+    user_passwd_record = r.get('User_Pwd_%s' % user)
+    if user_passwd_record is not None:
+        hash_object = hashlib.sha256(auth_salt_secret + passwd)
+        hex_dig = hash_object.hexdigest()
+        #print(hex_dig)
+        if hex_dig == user_passwd_record:
+            # The passwords match OK, so create a token.
+            token = str(uuid.uuid4())
+            # Store token in Redis.
+            r.set(('User_Auth_Cookie_%s' % token), user)
+            # Return token to be set as a cookie.
+            return token
+        else:
+            return None
+
+
+def check_auth_cookie(req):
+    assert isinstance(req, Request)
+    req_token = req.cookies.ncms_auth
+    if req_token is None:
+        return None
+    else:
+        r = connect_redis()
+        auth_token_name = r.get('User_Auth_Cookie_%s' % req_token)
+        if auth_token_name is None:
+            #print(" - auth cookie not found in Redis")
+            return None
+        else:
+            #print(" - auth cookie found OK")
+            superusers = r.lrange('mkrspc_superusers', 0, 9)
+            #print(superusers)
+            if auth_token_name in superusers:
+                return (auth_token_name, True)
+            else:
+                return (auth_token_name, False)
+
+
+def remove_auth_cookie(req):
+    assert isinstance(req, Request)
+    req_token = req.cookies.ncms_auth
+    if req_token is None:
+        return None
+    else:
+        r = connect_redis()
+        r.delete('User_Auth_Cookie_%s' % req_token)
+        response.set_cookie('ncms_auth', '')
+
+
+def _menu_entry(label, url, icon, selection_id, selected_entry, nav_style='default'):
+
+    if selection_id == selected_entry:
+        selection_class = "selected"
+    else:
+        selection_class = "sibling"
+
+    if nav_style == 'default':
+        html = """
+        <li class="%s">
+            <a href="%s"><i class="fa %s fa-fw"></i>&nbsp;%s</a>
+        </li>
+        """ % (selection_class, url, icon, label)
+    elif nav_style == 'wiki':
+        html = """
+        <li class="%s">
+            <a href="%s"><i class="fa %s fa-fw"></i>&nbsp;&nbsp;&nbsp; %s</a>
+        </li>
+        """ % (selection_class, url, icon, label)
+    else:
+        raise Exception("Unknown nav_style [%s]" % nav_style)
+
+    return html
+
+
+def menu(selected, user_info, nav_style='default'):
+
+    menu_template = """
+            <ul class="%(nav_style)s icons">
+                %(home)s
+                %(about)s
+                %(contact)s
+                %(wiki)s
+                %(admin)s
+            </ul>
+            """
+
+    replacements = dict()
+    replacements['nav_style'] = 'menu_%s' % nav_style
+    if user_info and user_info[1] is True:
+        assert isinstance(user_info, tuple)
+        assert len(user_info) == 2
+        replacements['admin'] = _menu_entry('Admin', '/admin', 'fa-cog', 'sel_admin', selected, nav_style)
+    else:
+        replacements['admin'] = ''
+
+    replacements['home'] = _menu_entry('Home', '/', 'fa-home', 'sel_home', selected, nav_style)
+    replacements['about'] = _menu_entry('About', '/about', 'fa-question-circle', 'sel_about', selected, nav_style)
+    replacements['contact'] = _menu_entry('Contact', '/contact', 'fa-envelope', 'sel_contact', selected, nav_style)
+    replacements['wiki'] = _menu_entry('Wiki', '/wiki/Index', 'fa-pencil-square-o', 'sel_wiki', selected, nav_style)
+
+    return menu_template % replacements
+
+
+
+def user_greeting(user_info):
+    if user_info is not None:
+        assert isinstance(user_info, tuple)
+        assert len(user_info) == 2
+        links = '<a href="/user_profile">%s</a> - <a href="/logout">log out</a>' % (user_info[0])
+        if user_info[1] == True:
+            return "Hail " + links
+        else:
+            return 'Hi ' + links
+    else:
+        return None
+
+
+def wiki_index():
+    r = connect_redis()
+    cat_keys = r.lrange("wiki_cats", 0, 99)
+    cats = []
+    for cat_key in cat_keys:
+        cat = r.get(cat_key)
+        print(cat_key, cat)
+        subcats_key = "wiki_subcats_%s" % cat_key
+        subcat_keys = r.lrange(subcats_key, 0, 99)
+        subcats = []
+        for sc_key in subcat_keys:
+            subcat = r.get(sc_key)
+            print(" - sub %s %s" % (sc_key, subcat))
+            subcats.append((sc_key, subcat,))
+
+        cats.append((cat_key, cat, subcats))
+
+    return cats

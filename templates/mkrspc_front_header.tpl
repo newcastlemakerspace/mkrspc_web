@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <head>
   <meta charset="utf-8" />
@@ -7,30 +6,25 @@
   <title>{{title}}</title>
   <link rel="stylesheet" type="text/css" href="/static/ncms.css">
   <link rel="stylesheet" href="/static/font-awesome-4.1.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="http://code.cdn.mozilla.net/fonts/fira.css">
 </head>
 
 <body id="home">
+    <div id="page">
+        <div id="header">
+            <h1 id="site-name" class="right">Newcastle Makerspace</h1>
 
-    <div id='page'>
+%if site_message is not None:
+{{!site_message}}
+%end
 
-        <div id='header'>
-            <div id='site-name'>Newcastle Makerspace</div>
-            <div id='navigation'>
-                <span id='user-greeting'> {{user_message}} </span>
+            <div id="navigation">
+%if user_message is not None:
+                <div id="user-greeting">{{!user_message}}</div>
+%end
                 {{!menu}}
             </div>
 
         </div> <!-- header -->
 
-
-        <div id='page-content'>
-
-            {{!main_content}}
-
-        </div>
-    </div> <!-- page -->
-</body>
-
-
-
-</html>
+        <div id="page-content">
