@@ -111,6 +111,27 @@ a {
   font-weight: bold;
 }
 
+a.wiki_index  {
+  font-weight: normal;
+}
+
+ul.wiki_index {
+    list-style-type: none;
+    padding: 0.5em;
+    margin-top: 0.33em;
+    margin-left: 1em;
+}
+
+ul.wiki_index li {
+    margin-top: 0.5em;
+}
+
+h4.wiki_index {
+    margin-top: 1.5em;
+    margin-bottom: 0em;
+}
+
+
 #page {
   margin: 2em;
   // max-width: 960px;

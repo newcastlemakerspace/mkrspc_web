@@ -40,21 +40,16 @@
                     {{!menu}}
                 </div>
             </div> <!-- header -->
-
-			<h3>
-				Wiki index
-			</h3>
-			<p>
-                <ul class="wiki_index">
-                   %for cat in wiki_index:
-                     <li class="wiki_index">{{cat[1]}}</li>
-                     <ul class="wiki_index">
-                     %for subcat in cat[2]:
-                        <li class="wiki_index"><a href="/wiki/subcat/{{subcat[0]}}">{{subcat[1]}}</a></li>
-                     %end
-                     </ul>
-                   %end
-                </ul>
-			</p>
+			<h4 class="wiki_index">Wiki index</h4>
+            <ul class="wiki_index">
+               %for cat in wiki_index:
+                 <li class="wiki_index">{{cat[1]}}</li>
+                 <ul class="wiki_index">
+                 %for subcat in cat[2]:
+                    <li class="wiki_index"><a href="/wiki/subcat/{{subcat[0]}}">{{subcat[1]}}</a></li>
+                 %end
+                 </ul>
+               %end
+            </ul>
 		</div>
         <div id="page-content">
