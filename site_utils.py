@@ -181,13 +181,13 @@ def wiki_index():
     cats = []
     for cat_key in cat_keys:
         cat = r.get(cat_key)
-        print(cat_key, cat)
+        #print(cat_key, cat)
         subcats_key = "wiki_subcats_%s" % cat_key
         subcat_keys = r.lrange(subcats_key, 0, 99)
         subcats = []
         for sc_key in subcat_keys:
             subcat = r.get(sc_key)
-            print(" - sub %s %s" % (sc_key, subcat))
+            #print(" - sub %s %s" % (sc_key, subcat))
             subcats.append((sc_key, subcat,))
 
         cats.append((cat_key, cat, subcats))

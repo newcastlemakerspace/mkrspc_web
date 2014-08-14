@@ -67,7 +67,8 @@ def wiki(slug):
     art_id = r.get('wiki_slug_' + slug)
 
     if art_id is None:
-        html = "Missing article - %s" % slug
+        site_message = "Missing article - %s" % slug
+        html = "Please check the URL."
     else:
         md_src = r.get('wiki_article_' + art_id)
         art_title = r.get('wiki_article_title_' + art_id)
@@ -75,6 +76,7 @@ def wiki(slug):
         md = markdown.Markdown(extensions=['wikilinks(base_url=/wiki/,html_class=myclass)'])
         #html = markdown.markdown(md_src, ['wikilinks(base_url=/wiki/)'])
         html = md.convert(md_src)
+        site_message = None
 
     context = {
         'title': u"Wiki - Newcastle Makerspace",
@@ -82,6 +84,7 @@ def wiki(slug):
         'main_content': html,
         'allow_edit': editable,
         'user_message': user_greeting(user_info),
+        'site_message': site_message,
         'wiki_index': categories,
         'slug': slug
     }

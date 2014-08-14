@@ -44,7 +44,7 @@ body {
 }
 
 #navigation ul.menu_wiki li {
-  width: 20em;
+  width: 100%;
   text-align: left;
 }
 
@@ -131,6 +131,12 @@ h4.wiki_index {
     margin-bottom: 0em;
 }
 
+div.site-message {
+    color: DarkOrange;
+    padding: 0.8em;
+    font-weight: 600;
+    background: #444444;
+}
 
 #page {
   margin: 2em;

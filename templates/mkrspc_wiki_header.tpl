@@ -53,3 +53,7 @@
             </ul>
 		</div>
         <div id="page-content">
+
+%if site_message is not None:
+<div class="site-message"><i class="fa fa-exclamation-triangle"></i> {{!site_message}}</div>
+%end

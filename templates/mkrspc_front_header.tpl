@@ -15,7 +15,7 @@
             <h1 id="site-name" class="right">Newcastle Makerspace</h1>
 
 %if site_message is not None:
-{{!site_message}}
+<div class="site-message"><i class="fa fa-exclamation-triangle"></i> {{!site_message}}</div>
 %end
 %if user_message is not None:
                 <div id="user-greeting">{{!user_message}}</div>
