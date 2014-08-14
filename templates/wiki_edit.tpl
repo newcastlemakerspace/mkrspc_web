@@ -6,7 +6,9 @@
   <a href="#" onclick="alert('not implemented yet..');"><i class="fa fa-check-square-o fa-fw"></i>Save</a>
 </div>
 
+
 {{!main_content}}
+
 
 %if editable == True:
 <div id="form_container">

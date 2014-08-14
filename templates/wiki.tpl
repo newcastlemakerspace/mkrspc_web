@@ -8,8 +8,9 @@
   </div>
 %end
 
-
+<h2 class="page-title">{{article_title}}</h2>
+<div id="wiki_article">
 {{!main_content}}
-
+</div>
 
 % include('templates/mkrspc_wiki_footer.tpl')

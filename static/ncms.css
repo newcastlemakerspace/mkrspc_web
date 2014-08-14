@@ -146,8 +146,10 @@ div.site-message {
   background: rgba(16,16,16,0.8);
 }
 
-#page-content p {
-  margin: 1em;
+#wiki_article {
+
+    padding-left: 1em;
+
 }
 
 #page-content {

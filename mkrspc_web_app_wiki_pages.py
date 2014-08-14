@@ -86,7 +86,8 @@ def wiki(slug):
         'user_message': user_greeting(user_info),
         'site_message': site_message,
         'wiki_index': categories,
-        'slug': slug
+        'slug': art_slug,
+        'article_title': art_title
     }
 
     return template('templates/wiki', context)
