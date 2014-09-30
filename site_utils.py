@@ -4,192 +4,218 @@ import uuid
 
 from bottle import Request, response
 from collections import defaultdict
-from site_config import static_files_root, auth_salt_secret
+from site_config import static_files_root, auth_salt_secret, REDIS_DB
 
 
-def connect_redis():
-    # TODO connection pooling
-    r = redis.StrictRedis(db=3)  # 3 for testing
-    assert isinstance(r, redis.StrictRedis)
-    return r
+class SiteUtils(object):
+
+    def __init__(self):
+
+        self.redis_conn = self.connect_redis()
+
+    def connect_redis(self):
+        # TODO connection pooling
+        r = redis.StrictRedis(db=REDIS_DB)
+        assert isinstance(r, redis.StrictRedis)
+        return r
 
 
-def _make_user(username, password, redis_conn):
-    hash_object = hashlib.sha256(auth_salt_secret + password)
-    hex_dig = hash_object.hexdigest()
-    redis_conn.set('User_Pwd_%s' % username, hex_dig)
-
-
-def _init_wiki(redis_conn):
-    default_text = """Root article"""
-    article_slug = 'Index'
-    article_name = "Makerspace Wiki Index Page"
-    r = redis_conn
-    article_id = str(uuid.uuid4())
-    art_key = 'wiki_article_%s' % article_id
-    r.set(art_key, default_text)
-    r.set('wiki_slug_%s' % article_slug, article_id)
-    r.set('wiki_article_slug_%s' % article_id, article_slug)
-    r.set('wiki_article_title_%s' % article_id, article_name)
-
-
-def _init_superuser(redis_conn):
-    redis_conn.delete('mkrspc_superusers')
-    dkpw_passwd = u'password1'
-    dkpw_user = u'dkpw'
-    redis_conn.lpush('mkrspc_superusers', dkpw_user)
-    _make_user(dkpw_user, dkpw_passwd, redis_conn)
-
-    alice_passwd = u'puppies'
-    alice_user = u'alice'
-    _make_user(alice_user, alice_passwd, redis_conn)
-
-
-def check_db_version():
-    key = 'mkrspc_db_version'
-    r = connect_redis()
-    db_version = r.get(key)
-    if db_version is None:
-        db_version = "0.1.0"
-        r.set(key, db_version)
-        _init_superuser(r)
-        _init_wiki(r)
-    return db_version
-
-
-def do_login(user, passwd):
-    r = connect_redis()
-    user_passwd_record = r.get('User_Pwd_%s' % user)
-    if user_passwd_record is not None:
-        hash_object = hashlib.sha256(auth_salt_secret + passwd)
+    def make_user(self, username, password):
+        hash_object = hashlib.sha256(auth_salt_secret + password)
         hex_dig = hash_object.hexdigest()
-        #print(hex_dig)
-        if hex_dig == user_passwd_record:
-            # The passwords match OK, so create a token.
-            token = str(uuid.uuid4())
-            # Store token in Redis.
-            r.set(('User_Auth_Cookie_%s' % token), user)
-            # Return token to be set as a cookie.
-            return token
-        else:
-            return None
+        self.redis_conn.set('User_Pwd_%s' % username, hex_dig)
 
 
-def check_auth_cookie(req):
-    assert isinstance(req, Request)
-    req_token = req.cookies.ncms_auth
-    if req_token is None:
-        return None
-    else:
-        r = connect_redis()
-        auth_token_name = r.get('User_Auth_Cookie_%s' % req_token)
-        if auth_token_name is None:
-            #print(" - auth cookie not found in Redis")
-            return None
-        else:
-            #print(" - auth cookie found OK")
-            superusers = r.lrange('mkrspc_superusers', 0, 9)
-            #print(superusers)
-            if auth_token_name in superusers:
-                return (auth_token_name, True)
+    def _init_wiki(self):
+        default_text = """***Root article"""
+        article_slug = 'Index'
+        article_name = "Makerspace Wiki Index Page"
+        self.create_wiki_page(article_slug, article_name, default_text)
+
+        default_text = """
+Test article
+===
+
+This text is _italic_
+
+This text is __bold__
+
+NB: unit tests look for this text.
+
+        """
+        article_slug = 'TestPage'
+        article_name = "Makerspace Wiki Test Page"
+        self.create_wiki_page(article_slug, article_name, default_text)
+
+
+    def _init_superuser(self):
+        self.redis_conn.delete('mkrspc_superusers')
+        dkpw_passwd = u'password1'
+        dkpw_user = u'dkpw'
+        self.redis_conn.lpush('mkrspc_superusers', dkpw_user)
+        self.make_user(dkpw_user, dkpw_passwd)
+
+        alice_passwd = u'puppies'
+        alice_user = u'alice'
+        self.make_user(alice_user, alice_passwd)
+
+
+    def check_db_version(self):
+        key = 'mkrspc_db_version'
+        r = self.redis_conn
+        db_version = r.get(key)
+        if db_version is None:
+            db_version = "0.1.0"
+            r.set(key, db_version)
+            self._init_superuser()
+            self._init_wiki()
+        return db_version
+
+
+    def do_login(self, user, passwd):
+        r = self.redis_conn
+        user_passwd_record = r.get('User_Pwd_%s' % user)
+        if user_passwd_record is not None:
+            hash_object = hashlib.sha256(auth_salt_secret + passwd)
+            hex_dig = hash_object.hexdigest()
+            #print(hex_dig)
+            if hex_dig == user_passwd_record:
+                # The passwords match OK, so create a token.
+                token = str(uuid.uuid4())
+                # Store token in Redis.
+                r.set(('User_Auth_Cookie_%s' % token), user)
+                # Return token to be set as a cookie.
+                return token
             else:
-                return (auth_token_name, False)
+                return None
 
 
-def remove_auth_cookie(req):
-    assert isinstance(req, Request)
-    req_token = req.cookies.ncms_auth
-    if req_token is None:
-        return None
-    else:
-        r = connect_redis()
-        r.delete('User_Auth_Cookie_%s' % req_token)
-        response.set_cookie('ncms_auth', '')
-
-
-def _menu_entry(label, url, icon, selection_id, selected_entry, nav_style='default'):
-
-    if selection_id == selected_entry:
-        selection_class = "selected"
-    else:
-        selection_class = "sibling"
-
-    if nav_style == 'default':
-        html = """
-        <li class="%s">
-            <a href="%s"><i class="fa %s fa-fw"></i>&nbsp;%s</a>
-        </li>
-        """ % (selection_class, url, icon, label)
-    elif nav_style == 'wiki':
-        html = """
-        <li class="%s">
-            <a href="%s"><i class="fa %s fa-fw"></i>&nbsp;&nbsp;&nbsp; %s</a>
-        </li>
-        """ % (selection_class, url, icon, label)
-    else:
-        raise Exception("Unknown nav_style [%s]" % nav_style)
-
-    return html
-
-
-def menu(selected, user_info, nav_style='default'):
-
-    menu_template = """
-            <ul class="%(nav_style)s icons">
-                %(home)s
-                %(about)s
-                %(contact)s
-                %(wiki)s
-                %(admin)s
-            </ul>
-            """
-
-    replacements = dict()
-    replacements['nav_style'] = 'menu_%s' % nav_style
-    if user_info and user_info[1] is True:
-        assert isinstance(user_info, tuple)
-        assert len(user_info) == 2
-        replacements['admin'] = _menu_entry('Admin', '/admin', 'fa-cog', 'sel_admin', selected, nav_style)
-    else:
-        replacements['admin'] = ''
-
-    replacements['home'] = _menu_entry('Home', '/', 'fa-home', 'sel_home', selected, nav_style)
-    replacements['about'] = _menu_entry('About', '/about', 'fa-question-circle', 'sel_about', selected, nav_style)
-    replacements['contact'] = _menu_entry('Contact', '/contact', 'fa-envelope', 'sel_contact', selected, nav_style)
-    replacements['wiki'] = _menu_entry('Wiki', '/wiki/Index', 'fa-pencil-square-o', 'sel_wiki', selected, nav_style)
-
-    return menu_template % replacements
-
-
-
-def user_greeting(user_info):
-    if user_info is not None:
-        assert isinstance(user_info, tuple)
-        assert len(user_info) == 2
-        links = '<a href="/user_profile">%s</a> - <a href="/logout">log out</a>' % (user_info[0])
-        if user_info[1] == True:
-            return "Hail " + links
+    def check_auth_cookie(self, req):
+        assert isinstance(req, Request)
+        req_token = req.cookies.ncms_auth
+        if req_token is None:
+            return None
         else:
-            return 'Hi ' + links
-    else:
-        return None
+            r = self.redis_conn
+            auth_token_name = r.get('User_Auth_Cookie_%s' % req_token)
+            if auth_token_name is None:
+                #print(" - auth cookie not found in Redis")
+                return None
+            else:
+                #print(" - auth cookie found OK")
+                superusers = r.lrange('mkrspc_superusers', 0, 9)
+                #print(superusers)
+                if auth_token_name in superusers:
+                    return (auth_token_name, True)
+                else:
+                    return (auth_token_name, False)
 
 
-def wiki_index():
-    r = connect_redis()
-    cat_keys = r.lrange("wiki_cats", 0, 99)
-    cats = []
-    for cat_key in cat_keys:
-        cat = r.get(cat_key)
-        #print(cat_key, cat)
-        subcats_key = "wiki_subcats_%s" % cat_key
-        subcat_keys = r.lrange(subcats_key, 0, 99)
-        subcats = []
-        for sc_key in subcat_keys:
-            subcat = r.get(sc_key)
-            #print(" - sub %s %s" % (sc_key, subcat))
-            subcats.append((sc_key, subcat,))
+    def remove_auth_cookie(self, req):
+        assert isinstance(req, Request)
+        req_token = req.cookies.ncms_auth
+        if req_token is None:
+            return None
+        else:
+            r = self.redis_conn
+            r.delete('User_Auth_Cookie_%s' % req_token)
+            response.set_cookie('ncms_auth', '')
 
-        cats.append((cat_key, cat, subcats))
 
-    return cats
+    def _menu_entry(self, label, url, icon, selection_id, selected_entry, nav_style='default'):
+
+        if selection_id == selected_entry:
+            selection_class = "selected"
+        else:
+            selection_class = "sibling"
+
+        if nav_style == 'default':
+            html = """
+            <li class="%s">
+                <a href="%s"><i class="fa %s fa-fw"></i>&nbsp;%s</a>
+            </li>
+            """ % (selection_class, url, icon, label)
+        elif nav_style == 'wiki':
+            html = """
+            <li class="%s">
+                <a href="%s"><i class="fa %s fa-fw"></i>&nbsp;&nbsp;&nbsp; %s</a>
+            </li>
+            """ % (selection_class, url, icon, label)
+        else:
+            raise Exception("Unknown nav_style [%s]" % nav_style)
+
+        return html
+
+
+    def menu(self, selected, user_info, nav_style='default'):
+
+        _menu_entry = self._menu_entry  # local ref to function
+
+        menu_template = """
+                <ul class="%(nav_style)s icons">
+                    %(home)s
+                    %(about)s
+                    %(contact)s
+                    %(wiki)s
+                    %(admin)s
+                </ul>
+                """
+
+        replacements = dict()
+        replacements['nav_style'] = 'menu_%s' % nav_style
+        if user_info and user_info[1] is True:
+            assert isinstance(user_info, tuple)
+            assert len(user_info) == 2
+            replacements['admin'] = _menu_entry('Admin', '/admin', 'fa-cog', 'sel_admin', selected, nav_style)
+        else:
+            replacements['admin'] = ''
+
+        replacements['home'] = _menu_entry('Home', '/', 'fa-home', 'sel_home', selected, nav_style)
+        replacements['about'] = _menu_entry('About', '/about', 'fa-question-circle', 'sel_about', selected, nav_style)
+        replacements['contact'] = _menu_entry('Contact', '/contact', 'fa-envelope', 'sel_contact', selected, nav_style)
+        replacements['wiki'] = _menu_entry('Wiki', '/wiki/Index', 'fa-pencil-square-o', 'sel_wiki', selected, nav_style)
+
+        return menu_template % replacements
+
+
+    def user_greeting(self, user_info):
+        if user_info is not None:
+            assert isinstance(user_info, tuple)
+            assert len(user_info) == 2
+            links = '<a href="/user_profile">%s</a> - <a href="/logout">log out</a>' % (user_info[0])
+            if user_info[1] == True:
+                return "Hail " + links
+            else:
+                return 'Hi ' + links
+        else:
+            return None
+
+
+    def create_wiki_page(self, slug, title, body):
+        r = self.redis_conn
+        article_id = str(uuid.uuid4())
+        art_key = 'wiki_article_%s' % article_id
+        r.set(art_key, body)
+        r.set('wiki_slug_%s' % slug, article_id)
+        r.set('wiki_article_slug_%s' % article_id, slug)
+        r.set('wiki_article_title_%s' % article_id, title)
+
+
+    def wiki_index(self):
+        r = self.redis_conn
+        cat_keys = r.lrange("wiki_cats", 0, 99)
+        cats = []
+        for cat_key in cat_keys:
+            cat = r.get(cat_key)
+            #print(cat_key, cat)
+            subcats_key = "wiki_subcats_%s" % cat_key
+            subcat_keys = r.lrange(subcats_key, 0, 99)
+            subcats = []
+            for sc_key in subcat_keys:
+                subcat = r.get(sc_key)
+                #print(" - sub %s %s" % (sc_key, subcat))
+                subcats.append((sc_key, subcat,))
+
+            cats.append((cat_key, cat, subcats))
+
+        return cats

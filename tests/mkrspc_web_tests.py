@@ -9,13 +9,11 @@ from site_config import static_files_root, auth_salt_secret
 class MkrspcWebTest(TestCase):
 
     def _make_user(self, username, password, redis_conn):
-
         hash_object = hashlib.sha256(auth_salt_secret + password)
         hex_dig = hash_object.hexdigest()
         self.r.set('User_Pwd_%s' % username, hex_dig)
 
     def _dummy_users(self, redis_conn):
-
         self.r.delete('mkrspc_superusers')
         self.r.lpush('mkrspc_superusers', u'dkpw')
 
@@ -28,43 +26,12 @@ class MkrspcWebTest(TestCase):
         self._make_user(alice_user, alice_passwd, redis_conn)
 
     def setUp(self):
-
         self.app = TestApp(mkrspc_web_app.app, extra_environ={'debug': 'True'})
         #for route in mkrspc_web_app.app.routes:
         #    print "App route: ", route
         #    pass
         self.r = redis.StrictRedis(db=3)  # 3 for testing
         self._dummy_users(self.r)
-
-        wiki_md = """
-Markdown test page
-========
-
-Sub-heading
--------
-
-*italic*
-
-**bold**
-
-[[WikiStyleLink]]
-
-[external link](http://example.com/page.html)
-"""
-        self.r.set('wiki_TestPage', wiki_md)
-        wiki_index = """
-
-Makerspace Wiki Index
---------------------
-
-Markdown **bold** *italic*
-
- * [[Index]]
- * [[TestPage]]
-
-"""
-
-        self.r.set('wiki_Index', wiki_index)
 
     def test_static_config(self):
         import os

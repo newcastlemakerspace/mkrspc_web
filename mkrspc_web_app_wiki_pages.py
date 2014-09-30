@@ -11,7 +11,7 @@ from bottle import FormsDict
 from collections import defaultdict
 from site_config import static_files_root
 
-from site_utils import check_auth_cookie, connect_redis, menu, user_greeting, wiki_index
+from site_utils import SiteUtils  # check_auth_cookie, connect_redis, menu, user_greeting, wiki_index
 
 wiki_app = Bottle()
 
@@ -55,19 +55,22 @@ def _safe_wiki_article_slug(name):
 @wiki_app.route('/wiki/<slug>')
 def wiki(slug):
 
-    categories = wiki_index()
-    print("Wiki page: ", categories)
+    su = SiteUtils()
+    categories = su.wiki_index()
+    #print("Wiki page: ", categories)
 
-    user_info = check_auth_cookie(request)
+    user_info = su.check_auth_cookie(request)
     editable = False
     if user_info is not None:
         editable = True
 
-    r = connect_redis()
+    r = su.redis_conn
     art_id = r.get('wiki_slug_' + slug)
 
     if art_id is None:
         site_message = "Missing article - %s" % slug
+        art_slug = slug
+        art_title = site_message
         html = "Please check the URL."
     else:
         md_src = r.get('wiki_article_' + art_id)
@@ -80,10 +83,10 @@ def wiki(slug):
 
     context = {
         'title': u"Wiki - Newcastle Makerspace",
-        'menu': menu('sel_wiki', user_info, nav_style='wiki'),
+        'menu': su.menu('sel_wiki', user_info, nav_style='wiki'),
         'main_content': html,
         'allow_edit': editable,
-        'user_message': user_greeting(user_info),
+        'user_message': su.user_greeting(user_info),
         'site_message': site_message,
         'wiki_index': categories,
         'slug': art_slug,
@@ -96,10 +99,11 @@ def wiki(slug):
 @wiki_app.route('/wiki/edit/<slug>')
 def wiki_edit_page(slug):
 
-    categories = wiki_index()
+    su = SiteUtils()
+    categories = su.wiki_index()
     print("Wiki page: ", categories)
 
-    user_info = check_auth_cookie(request)
+    user_info = su.check_auth_cookie(request)
     editable = False
     site_message = None
     if user_info is not None:
@@ -107,25 +111,27 @@ def wiki_edit_page(slug):
     else:
         site_message = u"Sorry, you do not have permission to edit this page."
 
-    r = connect_redis()
+    r = su.redis_conn
     art_id = r.get('wiki_slug_' + slug)
 
     if art_id is None:
-        html = "Missing article - %s" % slug
+        #art_slug = slug
+        art_title = site_message
+        html = "Missing article - %s <br/>Please check the URL." % slug
     else:
         md_src = r.get('wiki_article_' + art_id)
         art_title = r.get('wiki_article_title_' + art_id)
         art_slug = r.get('wiki_article_slug_' + art_id)
-        md = markdown.Markdown(extensions=['wikilinks(base_url=/wiki/,html_class=myclass)'])
+        md = markdown.Markdown(extensions=['wikilinks(base_url=/wiki/,html_class=mkrspc_wiki)'])
         #html = markdown.markdown(md_src, ['wikilinks(base_url=/wiki/)'])
         html = '<h4 class="page-title">Editing article: "%s" (%s)</h4>' % (art_title, art_slug)
 
     context = {
         'title': "Wiki - Newcastle Makerspace",
-        'menu': menu('sel_wiki', user_info, nav_style='wiki'),
+        'menu': su.menu('sel_wiki', user_info, nav_style='wiki'),
         'main_content': html,
         'editable': editable,
-        'user_message': user_greeting(user_info),
+        'user_message': su.user_greeting(user_info),
         'wiki_index': categories,
         'site_message': site_message,
         'article_id': art_id,
@@ -138,8 +144,10 @@ def wiki_edit_page(slug):
 @wiki_app.route('/wiki/subcat/<subcat_id>/')
 @wiki_app.route('/wiki/subcat/<subcat_id>')
 def wiki_subcat(subcat_id, site_message=None):
-    categories = wiki_index()
-    user_info = check_auth_cookie(request)
+
+    su = SiteUtils()
+    categories = su.wiki_index()
+    user_info = su.check_auth_cookie(request)
     editable = False
     if user_info is not None:
         editable = True
@@ -157,7 +165,7 @@ def wiki_subcat(subcat_id, site_message=None):
 
     html = [u'<h3 class="page-title">Wiki > %s > %s</h3>' % (maincat_name, subcat_name)]
     html += u'<p>'
-    r = connect_redis()
+    r = su.redis_conn
     articles = r.lrange('wiki_subcat_articles_' + subcat_id, 0, 999)
     html += u"%d articles<br/>" % len(articles)
     for art_id in articles:
@@ -180,10 +188,10 @@ def wiki_subcat(subcat_id, site_message=None):
 
     context = {
         'title': "Wiki - Newcastle Makerspace",
-        'menu': menu('sel_wiki', user_info, nav_style='wiki'),
+        'menu': su.menu('sel_wiki', user_info, nav_style='wiki'),
         'main_content': html,
         'editable': editable,
-        'user_message': user_greeting(user_info),
+        'user_message': su.user_greeting(user_info),
         'wiki_index': categories,
         'site_message': site_message,
         'subcategory_id': subcat_id
@@ -194,6 +202,8 @@ def wiki_subcat(subcat_id, site_message=None):
 
 @wiki_app.post('/wiki/update_article')
 def wiki_update_article():
+
+    su = SiteUtils()
     # form is defined in wiki_edit.tpl
     article_form = request.forms
     assert isinstance(article_form, FormsDict)
@@ -201,7 +211,7 @@ def wiki_update_article():
     article_body = article_form.article_markdown.strip()
     article_id = article_form.article_id
 
-    r = connect_redis()
+    r = su.redis_conn
     old_article_body = r.get('wiki_article_' + article_id)
     # save the old revision before doing anything else
     r.lpush('wiki_article_revision_%s' % article_id, old_article_body)
@@ -220,8 +230,9 @@ def wiki_update_article():
 @wiki_app.post('/wiki/new_article')
 def wiki_new_article():
 
-    categories = wiki_index()
-    user_info = check_auth_cookie(request)
+    su = SiteUtils()
+    categories = su.wiki_index()
+    user_info = su.check_auth_cookie(request)
 
     # form is defined in wiki_subcat.tpl
     article_form = request.forms
@@ -251,7 +262,7 @@ def wiki_new_article():
     print("OK, we have a good article: %s %s" % (article_slug, article_name))
 
     default_text = """**%s** (New article)""" % article_name
-    r = connect_redis()
+    r = su.redis_conn
     article_id = str(uuid.uuid4())
     art_key = 'wiki_article_%s' % article_id
     r.set(art_key, default_text)
@@ -269,7 +280,8 @@ def wiki_new_article():
 @wiki_app.post('/wiki/add_category')
 def add_wiki_category():
 
-    user_info = check_auth_cookie(request)
+    su = SiteUtils()
+    user_info = su.check_auth_cookie(request)
 
     if user_info is None:
         abort(403, "Forbidden")
@@ -290,16 +302,16 @@ def add_wiki_category():
 
     if bad_cat_message is None:
         cat_key = "wiki_cat_%s" % str(uuid.uuid4())
-        r = connect_redis()
+        r = su.redis_conn
         r.set(cat_key, cat_name)
         r.lpush("wiki_cats", cat_key)
 
     context = {
         'title': u"Admin - Newcastle Makerspace",
-        'menu': menu('sel_admin', user_info, nav_style='default'),
-        'user_message': user_greeting(user_info),
+        'menu': su.menu('sel_admin', user_info, nav_style='default'),
+        'user_message': su.user_greeting(user_info),
         'site_message': bad_cat_message,
-        'wiki_categories': wiki_index()
+        'wiki_categories': su.wiki_index()
     }
 
     return template('templates/admin', context)
@@ -309,7 +321,8 @@ def add_wiki_category():
 @wiki_app.post('/wiki/add_subcategory')
 def add_wiki_subcategory():
 
-    user_info = check_auth_cookie(request)
+    su = SiteUtils()
+    user_info = su.check_auth_cookie(request)
 
     if user_info is None:
         abort(403, "Forbidden")
@@ -333,16 +346,16 @@ def add_wiki_subcategory():
 
     if bad_cat_message is None:
         subcats_key = "wiki_subcats_%s" % main_cat_id
-        r = connect_redis()
+        r = su.redis_conn
         r.lpush(subcats_key, sub_cat_id)
         r.set(sub_cat_id, sub_cat_name)
 
     context = {
         'title': u"Admin - Newcastle Makerspace",
-        'menu': menu('sel_admin', user_info, nav_style='default'),
-        'user_message': user_greeting(user_info),
+        'menu': su.menu('sel_admin', user_info, nav_style='default'),
+        'user_message': su.user_greeting(user_info),
         'site_message': bad_cat_message,
-        'wiki_categories': wiki_index(),
+        'wiki_categories': su.wiki_index(),
         'subcategory_id': sub_cat_id
     }
 
