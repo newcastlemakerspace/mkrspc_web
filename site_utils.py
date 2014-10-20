@@ -15,8 +15,9 @@ class SiteUtils(object):
 
     def connect_redis(self):
         # TODO connection pooling
-        r = redis.StrictRedis(db=REDIS_DB)
-        assert isinstance(r, redis.StrictRedis)
+        #r = redis.StrictRedis(db=REDIS_DB)
+        r = redis.Redis(db=REDIS_DB)
+        assert isinstance(r, redis.Redis)
         return r
 
 
