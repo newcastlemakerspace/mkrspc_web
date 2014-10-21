@@ -25,10 +25,16 @@
 
     <p>The space is open irregularly at other times.</p>
 
-    <br />
-    <br />
-    <br />
-    <br />
+
+    <h3>Links</h3>
+
+    <ul>
+       <li><a href="http://newcastlelug.org/mailman/listinfo/makerspace_newcastlelug.org">Mailing List</a></li>
+       <li><a href="https://www.facebook.com/groups/627261683965099">Facebook Group</a></li>
+       <li><a href="http://nclmakerspace.wordpress.com">Wordpress Blog (Eventually migrating to this site)</a></li>
+    </ul>
+
+    <p>You might also find some of us idling in the <code>#newcastle</code> channel on <code>irc.freenode.net</code>.</p>
 
 </div>
 
