@@ -1,3 +1,4 @@
+/* Basic HTML resetting */
 html, body {
   height: 100%;
 }
@@ -12,6 +13,25 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+a {
+  color: #009FDA;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #00BAFF;
+}
+
+a {
+  font-weight: bold;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  background: #000;
+  padding: 0.2em 0.5em 0.1em;
+}
+
+/* Layout stuff */
 #page {
   margin: 2em auto;
   max-width: 960px;
@@ -20,6 +40,7 @@ body {
   background: rgba(16,16,16,0.8);
 }
 
+/* Navigation stuff */
 #navigation {
   margin-top: 0.2em;
   padding-left: 0.2em;
@@ -33,33 +54,10 @@ body {
   font-weight: bold;
 }
 
-#navigation ul.menu_wiki {
-  list-style-type: none;
-  text-align: left;
-  margin-left: 4px;
-}
-
 #navigation ul {
   padding: 0px;
   list-style-type: none;
   text-align: right;
-}
-
-#navigation ul.menu_wiki li {
-  margin-right: 0.5em;
-  padding: 0.2em 0em 0em 0em;
-  font-weight: bold;
-}
-
-#navigation ul.menu_wiki li {
-  width: 100%;
-  text-align: left;
-}
-
-#navigation ul.menu_wiki li a {
-  margin-left: 0px;
-  //width: 100%;
-  text-align: left;
 }
 
 #navigation a {
@@ -105,59 +103,11 @@ body {
 }
 */
 
-
-a {
-  color: #009FDA;
-  text-decoration: none;
-}
-
-a:hover {
-  color: #00BAFF;
-}
-
-a {
-  font-weight: bold;
-}
-
-a.wiki_index  {
-  font-weight: normal;
-}
-
-ul.wiki_index {
-    list-style-type: none;
-    padding: 0.5em;
-    margin-top: 0.33em;
-    margin-left: 1em;
-}
-
-ul.wiki_index li {
-    margin-top: 0.5em;
-}
-
-h4.wiki_index {
-    margin-top: 1.5em;
-    margin-bottom: 0em;
-}
-
 div.site-message {
     color: DarkOrange;
     padding: 0.8em;
     font-weight: 600;
     background: #444444;
-}
-
-#wiki_article {
-
-    padding-left: 1em;
-
-}
-
-#page-content {
-  margin-top: 1em;
-  margin-right: 1%;
-  margin-left: 0px;
-  padding: 0.6em;
-  background: rgba(16,16,16,0.8);
 }
 
 #side-nav {
@@ -186,14 +136,6 @@ div.site-message {
   text-align: left;
 }
 
-#user-greeting-wiki {
-  margin-left: 12px;
-  text-align: left;
-  color: #ffffff;
-  text-shadow: 1px 1px 2px #444444;
-  font-size: 0.8em;
-}
-
 #user-greeting {
   margin-right: 12px;
   text-align: right;
@@ -215,10 +157,17 @@ div.adr {
   background: #000;
 }
 
+#page-content {
+  margin-top: 1em;
+  margin-right: 1%;
+  margin-left: 0px;
+  padding: 0.6em;
+  background: rgba(16,16,16,0.8);
+}
+
 #content {
   padding: 0 1em;
 }
-
 
 
 /* forms */
@@ -238,15 +187,6 @@ form.loginform ul {
 form.loginform ul li.buttons{
     padding: 1 em;
     margin-top: 1em;
-}
-
-form.wiki-form ul {
-  list-style-type: none;
-  margin-top: 1em;
-}
-
-form.wiki-form ul li{
-  padding-top: 0.6em;
 }
 
 .ncms_buttons {
@@ -296,3 +236,70 @@ form.wiki-form ul li{
 	position:relative;
 	top:1px;
 }  /* This button was generated using CSSButtonGenerator.com */
+
+
+/* Wiki stuff */
+#wiki_article {
+    padding-left: 1em;
+}
+
+a.wiki_index  {
+  font-weight: normal;
+}
+
+ul.wiki_index {
+    list-style-type: none;
+    padding: 0.5em;
+    margin-top: 0.33em;
+    margin-left: 1em;
+}
+
+ul.wiki_index li {
+    margin-top: 0.5em;
+}
+
+h4.wiki_index {
+    margin-top: 1.5em;
+    margin-bottom: 0em;
+}
+
+form.wiki-form ul {
+  list-style-type: none;
+  margin-top: 1em;
+}
+
+form.wiki-form ul li{
+  padding-top: 0.6em;
+}
+
+#navigation ul.menu_wiki {
+  list-style-type: none;
+  text-align: left;
+  margin-left: 4px;
+}
+
+#navigation ul.menu_wiki li {
+  margin-right: 0.5em;
+  padding: 0.2em 0em 0em 0em;
+  font-weight: bold;
+}
+
+#navigation ul.menu_wiki li {
+  width: 100%;
+  text-align: left;
+}
+
+#navigation ul.menu_wiki li a {
+  margin-left: 0px;
+  //width: 100%;
+  text-align: left;
+}
+
+#user-greeting-wiki {
+  margin-left: 12px;
+  text-align: left;
+  color: #ffffff;
+  text-shadow: 1px 1px 2px #444444;
+  font-size: 0.8em;
+}
+
