@@ -72,6 +72,13 @@ NB: unit tests look for this text.
             self._init_wiki()
         return db_version
 
+    def user_exists(self, user):
+        r = self.redis_conn
+        user_passwd_record = r.get('User_Pwd_%s' % user)
+        if user_passwd_record is not None:
+            return True
+        else:
+            return False
 
     def do_login(self, user, passwd):
         r = self.redis_conn

@@ -77,7 +77,7 @@ def about():
 
 @app.route('/admin')
 @view('templates/admin')
-def admin():
+def admin(message=None, message_style=None):
     su = page_init()
     user_info = su.check_auth_cookie(request)
     if user_info is None:
@@ -92,7 +92,8 @@ def admin():
         'title': "Administration - Newcastle Makerspace",
         'menu': su.menu('sel_admin', user_info),
         'user_message': su.user_greeting(user_info),
-        'site_message': None,
+        'site_message': message,
+        'site_message_style': message_style,
         'wiki_categories': wiki_cats
     }
     return context
@@ -117,6 +118,26 @@ def login_post():
         redirect('/')
     else:
         return index(message="Login failed, invalid username or password.")
+
+@app.post('/admin_add_user')
+def login_post():
+    su = page_init()
+    new_user_form = request.forms
+    assert isinstance(new_user_form, FormsDict)
+    user = new_user_form.username
+    passwd = new_user_form.password
+
+    # make sure user does not exist already.
+    if su.user_exists(user):
+        return admin(message="User already exists, try another username.", message_style='fail')
+
+    try:
+        su.make_user(user, passwd)
+    except Exception as e:
+        return admin(message="An error occurred: %s" % e.message)
+    else:
+        return admin(message="User created successfully.", message_style='success')
+
 
 
 if __name__ == "__main__":

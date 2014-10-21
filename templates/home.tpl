@@ -13,9 +13,9 @@
         </small>
     </div>
 
-    <p>Newcastle Makerspace is at 21 Gordon St, Hamilton, around the back, through the gate. View Map</p>
+    <p>Newcastle Makerspace is at 21 Gordon St, Hamilton, around the back, through the gate.</p>
 
-    <H3>Meeting times:</H3>
+    <h3>Meeting times:</h3>
 
     <p>Every 1st, 3rd, and 5th Monday of the month, usually around 6pm.</p>
 

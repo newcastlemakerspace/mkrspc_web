@@ -30,8 +30,12 @@ class MkrspcWebTest(TestCase):
         #for route in mkrspc_web_app.app.routes:
         #    print "App route: ", route
         #    pass
-        self.r = redis.StrictRedis(db=3)  # 3 for testing
+        self.r = redis.Redis(db=3)  # 3 for testing
         self._dummy_users(self.r)
+
+    def test_aardvark_redis_db_is_empty_at_tests_start(self):
+        keycount = len(self.r.keys('*'))
+        self.assertEqual(keycount, 0)
 
     def test_static_config(self):
         import os
@@ -42,8 +46,9 @@ class MkrspcWebTest(TestCase):
         assert isinstance(response, TestResponse)
         self.assertEqual("200 OK", response.status)
         #print response.body
-        self.assertIn("<title>Home - Newcastle Makerspace</title>", response.body)
-        self.assertIn("Casablanca", response.body)
+        self.assertIn("<h3>Meeting times:</h3>", response.body)
+        # login form should be visible if not logged in
+        self.assertIn("<h3 class='page-title'>Member login</h3>", response.body)
 
     def test_about(self):
         response = self.app.get("/about")
@@ -143,4 +148,20 @@ class MkrspcWebTest(TestCase):
         response = self.app.get("/admin")
         assert isinstance(response, TestResponse)
         self.assertEqual("200 OK", response.status)
+        self.fail("test method incomplete")
 
+    def test_admin_create_new_user(self):
+        self._do_admin_login()
+        # check admin page
+        response = self.app.get("/admin")
+        assert isinstance(response, TestResponse)
+        self.assertEqual("200 OK", response.status)
+        response = self.app.post("/admin_add_user", params={'username': 'mary', 'password': 'eagle'})
+        assert isinstance(response, TestResponse)
+        self.assertEqual("200 OK", response.status)
+
+        response = self.app.post("/login", params={'username': 'mary', 'password': 'eagle'})
+        assert isinstance(response, TestResponse)
+        self.assertEqual("302 Found", response.status)
+        response = response.follow()
+        self.assertEqual("200 OK", response.status)
