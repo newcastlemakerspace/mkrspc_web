@@ -31,11 +31,15 @@ class MkrspcWebTest(TestCase):
         #    print "App route: ", route
         #    pass
         self.r = redis.Redis(db=3)  # 3 for testing
+
+        # commented out just in case...
+        #self.r.flushdb()
+
         self._dummy_users(self.r)
 
     def test_aardvark_redis_db_is_empty_at_tests_start(self):
         keycount = len(self.r.keys('*'))
-        self.assertEqual(keycount, 0)
+        self.assertEqual(keycount, 3)  # 2 users and superuser list
 
     def test_static_config(self):
         import os
@@ -142,6 +146,13 @@ class MkrspcWebTest(TestCase):
         response = response.follow()
         self.assertEqual("200 OK", response.status)
 
+    def test_admin_page(self):
+        self._do_admin_login()
+        # check admin page
+        response = self.app.get("/admin")
+        assert isinstance(response, TestResponse)
+        self.assertEqual("200 OK", response.status)
+
     def test_wiki_new_category(self):
         self._do_admin_login()
         # check admin page
@@ -152,16 +163,29 @@ class MkrspcWebTest(TestCase):
 
     def test_admin_create_new_user(self):
         self._do_admin_login()
-        # check admin page
-        response = self.app.get("/admin")
+        response = self.app.post("/admin_add_user", params={'newusername': 'mary', 'newpassword': 'eagle', 'confirmpassword': 'eagle'})
         assert isinstance(response, TestResponse)
         self.assertEqual("200 OK", response.status)
-        response = self.app.post("/admin_add_user", params={'username': 'mary', 'password': 'eagle'})
-        assert isinstance(response, TestResponse)
-        self.assertEqual("200 OK", response.status)
+        self.assertIn("User created successfully.", response.body)
 
         response = self.app.post("/login", params={'username': 'mary', 'password': 'eagle'})
         assert isinstance(response, TestResponse)
         self.assertEqual("302 Found", response.status)
         response = response.follow()
         self.assertEqual("200 OK", response.status)
+
+    def test_admin_create_new_user_but_it_already_exists(self):
+        self._do_admin_login()
+        response = self.app.post("/admin_add_user", params={'newusername': 'alice', 'newpassword': 'sharks', 'confirmpassword': 'sharks'})
+        assert isinstance(response, TestResponse)
+        self.assertEqual("200 OK", response.status)
+        self.assertIn("User already exists, try another username.", response.body)
+
+    def test_admin_create_new_user_with_password_typo(self):
+        self._do_admin_login()
+        response = self.app.post("/admin_add_user", params={'newusername': 'eve', 'newpassword': 'squid', 'confirmpassword': 'skwid'})
+        assert isinstance(response, TestResponse)
+        self.assertEqual("200 OK", response.status)
+        self.assertIn("Passwords do not match.", response.body)
+
+

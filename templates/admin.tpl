@@ -11,21 +11,21 @@
 		<form id="add_member" class="loginform"  method="post" action="/admin_add_user">
             <ul>
                 <li id="li_1" >
-                    <label class="description" for="username">Username</label>
+                    <label class="description" for="newusername">Username</label>
                     <div>
-                        <input id="username" name="username" class="element text medium" type="text" maxlength="255" value=""/>
+                        <input id="newusername" name="newusername" class="element text medium" type="text" maxlength="255" value=""/>
                     </div>
                 </li>
                 <li id="li_2" >
-                    <label class="description" for="password">Password</label>
+                    <label class="description" for="newpassword">Password</label>
                     <div>
-                        <input id="password" name="password" class="element text medium" type="password" maxlength="255" value=""/>
+                        <input id="newpassword" name="newpassword" class="element text medium" type="password" maxlength="255" value=""/>
                     </div>
                 </li>
                 <li id="li_3" >
-                    <label class="description" for="confirm_password">Confirm password</label>
+                    <label class="description" for="confirmpassword">Confirm password</label>
                     <div>
-                        <input id="confirm_password" name="confirm_password" class="element text medium" type="password" maxlength="255" value=""/>
+                        <input id="confirmpassword" name="confirmpassword" class="element text medium" type="password" maxlength="255" value=""/>
                     </div>
                 </li>
                 <li class="buttons">

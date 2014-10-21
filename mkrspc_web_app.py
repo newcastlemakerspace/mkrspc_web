@@ -124,12 +124,17 @@ def login_post():
     su = page_init()
     new_user_form = request.forms
     assert isinstance(new_user_form, FormsDict)
-    user = new_user_form.username
-    passwd = new_user_form.password
+    user = new_user_form.newusername
+    passwd = new_user_form.newpassword
+    confirm = new_user_form.confirmpassword
 
     # make sure user does not exist already.
     if su.user_exists(user):
         return admin(message="User already exists, try another username.", message_style='fail')
+
+    # password was typed correctly?
+    if passwd != confirm:
+        return admin(message="Passwords do not match.", message_style='fail')
 
     try:
         su.make_user(user, passwd)
