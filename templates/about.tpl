@@ -1,4 +1,5 @@
 % include('templates/mkrspc_front_header.tpl')
+
 <h2 class='page-title'>About</h2>
 <div id='content'>
     <p>
@@ -14,4 +15,5 @@
     <p>&nbsp;[images]</p>
     <p>Some links to wiki pages could go here.</p> -->
 </div>
+
 % include('templates/mkrspc_front_footer.tpl')

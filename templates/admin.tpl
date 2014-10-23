@@ -1,4 +1,5 @@
 % include('templates/mkrspc_front_header.tpl')
+
 <h2 class='page-title'>Site Administration</h2>
 <div id='content'>
     <p>Hi there, superuser.</p>
@@ -105,7 +106,5 @@
 		</form>
 	</div>
 </div>
-
-
 
 % include('templates/mkrspc_front_footer.tpl')
