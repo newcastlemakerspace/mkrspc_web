@@ -107,14 +107,6 @@ div.site-message {
     background: #444444;
 }
 
-#side-nav {
-    margin-top: 1em;
-    margin-left: 1%;
-    margin-right: 0px;
-    padding: 0.6em;
-    background: rgba(16,16,16,0.8);
-}
-
 
 /* HEADER STUFF */
 
@@ -157,10 +149,6 @@ div.adr {
 }
 
 #page-content {
-    margin-top: 1em;
-    margin-right: 1%;
-    margin-left: 0px;
-    padding: 0.6em;
     background: rgba(16,16,16,0.8);
 }
 
@@ -171,6 +159,12 @@ div.adr {
 #content h1, #content h2, #content h3, #content h4, #content h5, #content h6 {
     background: #000;
     padding: 0.2em 0.5em 0.1em;
+}
+
+.front #osm-map {
+    float: right;
+    margin-left: 1em;
+    margin-bottom: 1em;
 }
 
 /* forms */
@@ -225,8 +219,7 @@ form.loginform ul li.buttons{
 
 
 /* Wiki stuff */
-body.wiki #side-nav
-{
+body.wiki #side-nav {
     clear: right;
     float: right;
     width: 18%;
@@ -234,16 +227,18 @@ body.wiki #side-nav
     margin-right: 1%;
     margin-left: 0px;
     margin-top: 2em;
+    padding: 0.6em;
+    background: rgba(16,16,16,0.8);
 }
 
-body.wiki #page-content
-{
+body.wiki #page-content {
     float: left;
     width: 75%;
     display: inline;
     margin-left: 1%;
     margin-right: 0px;
     margin-top: 2em;
+    padding: 0.6em;
 }
 
 #wiki_article {

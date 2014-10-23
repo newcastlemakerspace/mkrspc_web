@@ -213,7 +213,6 @@ NB: unit tests look for this text.
                 <ul class="%(nav_style)s icons">
                     %(home)s
                     %(about)s
-                    %(contact)s
                     %(wiki)s
                     %(admin)s
                 </ul>
@@ -230,7 +229,6 @@ NB: unit tests look for this text.
 
         replacements['home'] = _menu_entry('Home', '/', 'fa-home', 'sel_home', selected, nav_style)
         replacements['about'] = _menu_entry('About', '/about', 'fa-question-circle', 'sel_about', selected, nav_style)
-        replacements['contact'] = _menu_entry('Contact', '/contact', 'fa-envelope', 'sel_contact', selected, nav_style)
         replacements['wiki'] = _menu_entry('Wiki', '/wiki/Index', 'fa-pencil-square-o', 'sel_wiki', selected, nav_style)
 
         return menu_template % replacements
