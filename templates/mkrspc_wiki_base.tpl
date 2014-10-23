@@ -11,12 +11,13 @@
 
 <body id="home" class="{{page_type}}">
 
+    %if user_message is not None:
+        <div id="user-greeting"> {{!user_message}} </div>
+    %end
+
     <div id="side-nav">
         <div id="header">
             <h1 id="site-name" class="left">Newcastle <br/>Makerspace</h1>
-            %if user_message is not None:
-                <div id="user-greeting-wiki"> {{!user_message}} </div>
-            %end
 
             <div id="navigation">
                 {{!menu}}
@@ -36,14 +37,14 @@
                 %end
             </ul>
         </div> <!-- wiki-index -->
-	</div> <!-- side-nav -->
+    </div> <!-- side-nav -->
     <div id="page-content">
 
-    %if site_message is not None:
-    <div class="site-message"><i class="fa fa-exclamation-triangle"></i> {{!site_message}}</div>
-    %end
+        %if site_message is not None:
+        <div class="site-message"><i class="fa fa-exclamation-triangle"></i> {{!site_message}}</div>
+        %end
 
-    {{!base}}
+        {{!base}}
 
     </div> <!-- page content -->
 </body>
