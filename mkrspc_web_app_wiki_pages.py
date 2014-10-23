@@ -155,26 +155,21 @@ def wiki_subcat(subcat_id, site_message=None):
     print("looking for articles:")
 
     html = [u'<h3 class="page-title">Wiki > %s > %s</h3>' % (maincat_name, subcat_name)]
-    html += u'<p>'
     r = su.redis_conn
     articles = r.lrange('wiki_subcat_articles_' + subcat_id, 0, 999)
-    html += u"%d articles<br/>" % len(articles)
-    for art_id in articles:
-        print(art_id)
-        art_key = 'wiki_article_%s' % art_id
-        #art_body_markdown = r.get(art_key)
 
+    html += u'<p>%d articles:</p>\n<ul class="category-page-list">' % len(articles)
+
+    for art_id in articles:
         art_slug_key = 'wiki_article_slug_%s' % art_id
         art_slug = r.get(art_slug_key)
 
         art_title_key = 'wiki_article_title_%s' % art_id
         art_title = r.get(art_title_key)
 
-        html += u"Wiki article %s<br/>" % art_key
-        #html += u"Title: [%s]" % art_title
-        html += u'<a href="/wiki/%s">/wiki/%s</a><br/>' % (art_slug, art_title)
-        #html += u" characters: [%d] <br/>" % len(art_body_markdown)
-    html += u'</p>'
+        html += u'<li class="category-page"><a href="/wiki/%s">%s</a></li>' % (art_slug, art_title)
+
+    html += u'</ul>'
     html = u"".join(html)
 
     context = {
