@@ -227,17 +227,23 @@ form.loginform ul li.buttons{
 /* Wiki stuff */
 body.wiki #side-nav
 {
-    clear: left;
-    float: left;
+    clear: right;
+    float: right;
     width: 18%;
     display: inline;
+    margin-right: 1%;
+    margin-left: 0px;
+    margin-top: 2em;
 }
 
 body.wiki #page-content
 {
-    float: right;
+    float: left;
     width: 75%;
     display: inline;
+    margin-left: 1%;
+    margin-right: 0px;
+    margin-top: 2em;
 }
 
 #wiki_article {
