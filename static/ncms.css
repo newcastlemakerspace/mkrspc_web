@@ -13,12 +13,6 @@ body {
     text-rendering: optimizeLegibility;
 }
 
-a.wiki_internal {
-    color: #009FDA;
-    text-decoration: underline;
-    background: #222222;
-}
-
 a {
     color: #009FDA;
     text-decoration: none;
@@ -203,35 +197,18 @@ form.loginform ul li.buttons{
     background:-moz-linear-gradient( center top, #63b8ee 5%, #468ccf 100% );
     filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#63b8ee', endColorstr='#468ccf');
     background-color:#63b8ee;
-    -webkit-border-top-left-radius:0px;
-    -moz-border-radius-topleft:0px;
-    border-top-left-radius:0px;
-    -webkit-border-top-right-radius:0px;
-    -moz-border-radius-topright:0px;
-    border-top-right-radius:0px;
-    -webkit-border-bottom-right-radius:0px;
-    -moz-border-radius-bottomright:0px;
-    border-bottom-right-radius:0px;
-    -webkit-border-bottom-left-radius:0px;
-    -moz-border-radius-bottomleft:0px;
-    border-bottom-left-radius:0px;
-    text-indent:0;
     border:1px solid #3866a3;
+    border-radius:15px;
     display:inline-block;
     color:#14396a;
-    font-family:Courier New;
-    font-size:15px;
+    font-size:1em;
     font-weight:bold;
     font-style:normal;
-    height:40px;
-    line-height:40px;
-    width:99px;
     text-decoration:none;
     text-align:center;
-    margin-right: 1.5em;
-    margin-top: 0.5em;
+    margin-right: 1em;
+    padding: 0.2em 0.7em;
     box-shadow: 3px 3px 3px #444444;
-
 }
 
 .ncms_buttons:hover {
@@ -265,6 +242,12 @@ body.wiki #page-content
 
 #wiki_article {
     padding-left: 1em;
+}
+
+a.wiki_internal {
+    color: #009FDA;
+    text-decoration: underline;
+    background: #222222;
 }
 
 a.wiki_index  {
@@ -319,4 +302,9 @@ form.wiki-form ul li{
     text-align: left;
 }
 
+.wiki_edit_toolbar {
+    float: right;
+    margin-top: 2em;
+    margin-right: 1em;
+}
 

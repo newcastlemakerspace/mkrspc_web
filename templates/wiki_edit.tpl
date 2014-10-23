@@ -1,12 +1,6 @@
 % page_type = "wiki"
 % rebase('templates/mkrspc_wiki_base.tpl')
 
-<div class="wiki_edit_toolbar">
-    <i class="fa fa-pencil-square-o fa-fw"></i>Edit page
-    <a href="#" onclick="alert('not implemented yet..');"><i class="fa fa-times fa-fw"></i>Cancel</a>
-    <a href="#" onclick="alert('not implemented yet..');"><i class="fa fa-check-square-o fa-fw"></i>Save</a>
-</div>
-
 {{!main_content}}
 
 %if editable == True:
@@ -23,7 +17,7 @@
             <li>
                 <label class="description" for="article_markdown">Article body (markdown)</label>
                 <div>
-                    <textarea id="article_markdown" name="article_markdown" rows="30" cols="72" class="ncms_textarea">{{!article_markdown}}</textarea>
+                    <textarea id="article_markdown" name="article_markdown" rows="30" cols="100" class="ncms_textarea">{{!article_markdown}}</textarea>
                 </div>
             </li>
             <li>
