@@ -1,19 +1,16 @@
 from __future__ import print_function
 
 import markdown
-import redis
-import hashlib
 import uuid
 
-from bottle import request, response, run, template, Bottle, view, abort, Request, redirect
-from bottle import static_file
+from bottle import request, template, Bottle, abort, redirect
 from bottle import FormsDict
-from collections import defaultdict
-from site_config import static_files_root
+
 
 from site_utils import SiteUtils  # check_auth_cookie, connect_redis, menu, user_greeting, wiki_index
 
 wiki_app = Bottle()
+
 
 def _safe_wiki_category_name(name):
     allowed_symbols = """()'"-_/"""
@@ -23,6 +20,7 @@ def _safe_wiki_category_name(name):
     else:
         return None
 
+
 def _safe_wiki_article_name(name):
     allowed_symbols = """()'"-_/%&"""
     bad_chars = [c for c in name if c != u' ' and not c.isalpha() and not c.isnumeric() and not c in allowed_symbols]
@@ -31,6 +29,7 @@ def _safe_wiki_article_name(name):
     else:
         return None
 
+
 def _safe_wiki_article_slug(name):
 
     bad_chars = [c for c in name if not c.isalpha() and not c.isnumeric()]
@@ -38,17 +37,6 @@ def _safe_wiki_article_slug(name):
         return bad_chars
     else:
         return None
-
-#
-# def _wiki_index():
-#     r = connect_redis()
-#     cat_keys = r.lrange("wiki_cats", 0, 99)
-#     cats = []
-#     for cat_key in cat_keys :
-#         cat = r.get(cat_key)
-#         print(cat_key, cat)
-#         cats.append(cat)
-#     return cats
 
 
 @wiki_app.route('/wiki/<slug>/')
@@ -76,7 +64,7 @@ def wiki(slug):
         md_src = r.get('wiki_article_' + art_id)
         art_title = r.get('wiki_article_title_' + art_id)
         art_slug = r.get('wiki_article_slug_' + art_id)
-        md = markdown.Markdown(extensions=['wikilinks(base_url=/wiki/,html_class=myclass)'])
+        md = markdown.Markdown(extensions=['wikilinks(base_url=/wiki/,html_class=wiki_internal)'])
         #html = markdown.markdown(md_src, ['wikilinks(base_url=/wiki/)'])
         html = md.convert(md_src)
         site_message = None
@@ -94,6 +82,7 @@ def wiki(slug):
     }
 
     return template('templates/wiki', context)
+
 
 @wiki_app.route('/wiki/edit/<slug>/')
 @wiki_app.route('/wiki/edit/<slug>')
@@ -118,11 +107,12 @@ def wiki_edit_page(slug):
         #art_slug = slug
         art_title = site_message
         html = "Missing article - %s <br/>Please check the URL." % slug
+        md_src = None
     else:
         md_src = r.get('wiki_article_' + art_id)
         art_title = r.get('wiki_article_title_' + art_id)
         art_slug = r.get('wiki_article_slug_' + art_id)
-        md = markdown.Markdown(extensions=['wikilinks(base_url=/wiki/,html_class=mkrspc_wiki)'])
+        #md = markdown.Markdown(extensions=['wikilinks(base_url=/wiki/,html_class=mkrspc_wiki)'])
         #html = markdown.markdown(md_src, ['wikilinks(base_url=/wiki/)'])
         html = '<h4 class="page-title">Editing article: "%s" (%s)</h4>' % (art_title, art_slug)
 
@@ -140,6 +130,7 @@ def wiki_edit_page(slug):
     }
 
     return template('templates/wiki_edit', context)
+
 
 @wiki_app.route('/wiki/subcat/<subcat_id>/')
 @wiki_app.route('/wiki/subcat/<subcat_id>')
@@ -171,7 +162,7 @@ def wiki_subcat(subcat_id, site_message=None):
     for art_id in articles:
         print(art_id)
         art_key = 'wiki_article_%s' % art_id
-        art_body_markdown = r.get(art_key)
+        #art_body_markdown = r.get(art_key)
 
         art_slug_key = 'wiki_article_slug_%s' % art_id
         art_slug = r.get(art_slug_key)
@@ -204,6 +195,10 @@ def wiki_subcat(subcat_id, site_message=None):
 def wiki_update_article():
 
     su = SiteUtils()
+    user_info = su.check_auth_cookie(request)
+    if user_info is None:
+        abort(403, "Forbidden")
+
     # form is defined in wiki_edit.tpl
     article_form = request.forms
     assert isinstance(article_form, FormsDict)
@@ -231,8 +226,10 @@ def wiki_update_article():
 def wiki_new_article():
 
     su = SiteUtils()
-    categories = su.wiki_index()
+    #categories = su.wiki_index()
     user_info = su.check_auth_cookie(request)
+    if user_info is None:
+        abort(403, "Forbidden")
 
     # form is defined in wiki_subcat.tpl
     article_form = request.forms
@@ -248,18 +245,16 @@ def wiki_new_article():
         return wiki_subcat(subcat_id, site_message="No article name given.")
 
     bad_chars = _safe_wiki_article_slug(article_slug)
-    bad_cat_message = None
     if bad_chars is not None:
         bad_slug_message = u"Sorry, these characters are not allowed in an article slug: %s" % u" ".join(bad_chars)
         return wiki_subcat(subcat_id, site_message=bad_slug_message)
 
     bad_chars = _safe_wiki_article_name(article_name)
-    bad_name_message = None
     if bad_chars is not None:
         bad_cat_message = u"Sorry, these characters are not allowed in an article name: %s" % u" ".join(bad_chars)
-        return wiki_subcat(subcat_id, site_message=bad_name_message)
+        return wiki_subcat(subcat_id, site_message=bad_cat_message)
 
-    print("OK, we have a good article: %s %s" % (article_slug, article_name))
+    #print("OK, we have a good article: %s %s" % (article_slug, article_name))
 
     default_text = """**%s** (New article)""" % article_name
     r = su.redis_conn
@@ -270,9 +265,6 @@ def wiki_new_article():
     r.set('wiki_article_slug_%s' % article_id, article_slug)
     r.set('wiki_article_title_%s' % article_id, article_name)
     r.lpush("wiki_subcat_articles_%s" % subcat_id, article_id)
-
-    # on error
-    #return wiki_subcat(subcat_id, user_message=bad_cat_message)
 
     return wiki(article_slug)
 
@@ -315,7 +307,6 @@ def add_wiki_category():
     }
 
     return template('templates/admin', context)
-
 
 
 @wiki_app.post('/wiki/add_subcategory')

@@ -24,12 +24,10 @@ class SiteUtils(object):
         assert isinstance(r, redis.Redis)
         return r
 
-
     def make_user(self, username, password):
         hash_object = hashlib.sha256(auth_salt_secret + password)
         hex_dig = hash_object.hexdigest()
         self.redis_conn.set('User_Pwd_%s' % username, hex_dig)
-
 
     def _init_wiki(self):
         default_text = """***Root article"""
@@ -63,7 +61,6 @@ NB: unit tests look for this text.
         alice_passwd = u'puppies'
         alice_user = u'alice'
         self.make_user(alice_user, alice_passwd)
-
 
     def check_db_version(self):
         key = 'mkrspc_db_version'
@@ -154,7 +151,6 @@ NB: unit tests look for this text.
 
         return outfilename
 
-
     def check_auth_cookie(self, req):
         assert isinstance(req, Request)
         req_token = req.cookies.ncms_auth
@@ -175,7 +171,6 @@ NB: unit tests look for this text.
                 else:
                     return (auth_token_name, False)
 
-
     def remove_auth_cookie(self, req):
         assert isinstance(req, Request)
         req_token = req.cookies.ncms_auth
@@ -185,7 +180,6 @@ NB: unit tests look for this text.
             r = self.redis_conn
             r.delete('User_Auth_Cookie_%s' % req_token)
             response.set_cookie('ncms_auth', '')
-
 
     def _menu_entry(self, label, url, icon, selection_id, selected_entry, nav_style='default'):
 
@@ -210,7 +204,6 @@ NB: unit tests look for this text.
             raise Exception("Unknown nav_style [%s]" % nav_style)
 
         return html
-
 
     def menu(self, selected, user_info, nav_style='default'):
 
@@ -242,7 +235,6 @@ NB: unit tests look for this text.
 
         return menu_template % replacements
 
-
     def user_greeting(self, user_info):
         if user_info is not None:
             assert isinstance(user_info, tuple)
@@ -255,7 +247,6 @@ NB: unit tests look for this text.
         else:
             return None
 
-
     def create_wiki_page(self, slug, title, body):
         r = self.redis_conn
         article_id = str(uuid.uuid4())
@@ -264,7 +255,6 @@ NB: unit tests look for this text.
         r.set('wiki_slug_%s' % slug, article_id)
         r.set('wiki_article_slug_%s' % article_id, slug)
         r.set('wiki_article_title_%s' % article_id, title)
-
 
     def wiki_index(self):
         r = self.redis_conn

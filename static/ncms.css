@@ -13,6 +13,13 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+
+a.wiki_internal {
+  color: #009FDA;
+  text-decoration: underline;
+  background: #222222;
+}
+
 a {
   color: #009FDA;
   text-decoration: none;
