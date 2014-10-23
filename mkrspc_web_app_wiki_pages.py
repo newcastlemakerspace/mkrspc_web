@@ -14,7 +14,7 @@ wiki_app = Bottle()
 
 def _safe_wiki_category_name(name):
     allowed_symbols = """()'"-_/"""
-    bad_chars = [c for c in name if c != u' ' and not c.isalpha() and not c.isnumeric() and not c in allowed_symbols]
+    bad_chars = [c for c in name if c != u' ' and not c.isalpha() and not c.isnumeric() and c not in allowed_symbols]
     if len(bad_chars) > 0:
         return bad_chars
     else:
@@ -23,7 +23,7 @@ def _safe_wiki_category_name(name):
 
 def _safe_wiki_article_name(name):
     allowed_symbols = """()'"-_/%&"""
-    bad_chars = [c for c in name if c != u' ' and not c.isalpha() and not c.isnumeric() and not c in allowed_symbols]
+    bad_chars = [c for c in name if c != u' ' and not c.isalpha() and not c.isnumeric() and c not in allowed_symbols]
     if len(bad_chars) > 0:
         return bad_chars
     else:
@@ -31,8 +31,8 @@ def _safe_wiki_article_name(name):
 
 
 def _safe_wiki_article_slug(name):
-
-    bad_chars = [c for c in name if not c.isalpha() and not c.isnumeric()]
+    allowed_symbols = """()-_"""
+    bad_chars = [c for c in name if not c.isalpha() and not c.isnumeric() and c not in allowed_symbols]
     if len(bad_chars) > 0:
         return bad_chars
     else:
