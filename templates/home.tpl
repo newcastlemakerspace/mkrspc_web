@@ -1,4 +1,4 @@
-% include('templates/mkrspc_front_header.tpl')
+% rebase('templates/mkrspc_front_base.tpl')
 
 <h2 class='page-title'>Home</h2>
 <div id='content'>
@@ -36,4 +36,3 @@
 
 % include('templates/mkrspc_login_block.tpl')
 
-% include('templates/mkrspc_front_footer.tpl')

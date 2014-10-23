@@ -27,3 +27,8 @@
         </div> <!-- header -->
 
         <div id="page-content">
+        {{!base}}
+        </div> <!-- page content -->
+    </div> <!-- page -->
+</body>
+</html>

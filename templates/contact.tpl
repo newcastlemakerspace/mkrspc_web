@@ -1,4 +1,4 @@
-% include('templates/mkrspc_front_header.tpl')
+% rebase('templates/mkrspc_front_base.tpl')
 
 <h2 class='page-title'>Contact</h2>
 <div id='content'>
@@ -28,4 +28,3 @@
     </p>
 </div>
 
-% include('templates/mkrspc_front_footer.tpl')

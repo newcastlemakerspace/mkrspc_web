@@ -1,4 +1,4 @@
-% include('templates/mkrspc_wiki_header.tpl')
+% rebase('templates/mkrspc_wiki_base.tpl')
 
 <div class="wiki_edit_toolbar">
     <i class="fa fa-pencil-square-o fa-fw"></i>Edit page
@@ -39,4 +39,3 @@
 
 %end
 
-% include('templates/mkrspc_wiki_footer.tpl')

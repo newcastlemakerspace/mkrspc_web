@@ -1,4 +1,4 @@
-% include('templates/mkrspc_wiki_header.tpl')
+% rebase('templates/mkrspc_wiki_base.tpl')
 
 {{!main_content}}
 
@@ -36,4 +36,3 @@
 
 %end
 
-% include('templates/mkrspc_wiki_footer.tpl')

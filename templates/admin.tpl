@@ -1,4 +1,4 @@
-% include('templates/mkrspc_front_header.tpl')
+% rebase('templates/mkrspc_front_base.tpl')
 
 <h2 class='page-title'>Site Administration</h2>
 <div id='content'>
@@ -107,4 +107,3 @@
 	</div>
 </div>
 
-% include('templates/mkrspc_front_footer.tpl')

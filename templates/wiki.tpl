@@ -1,4 +1,4 @@
-% include('templates/mkrspc_wiki_header.tpl')
+% rebase('templates/mkrspc_wiki_base.tpl')
 
 %if allow_edit == True:
     <div class="wiki_edit_toolbar">
@@ -13,4 +13,3 @@
 {{!main_content}}
 </div>
 
-% include('templates/mkrspc_wiki_footer.tpl')
