@@ -120,8 +120,15 @@ def login_post():
         return index(message="Login failed, invalid username or password.")
 
 @app.post('/admin_add_user')
-def login_post():
+def admin_add_user():
     su = page_init()
+
+    user_info = su.check_auth_cookie(request)
+    if user_info is None:
+        abort(403, "Forbidden")
+    if user_info[1] is False:  # superuser?
+        abort(403, "Forbidden")
+
     new_user_form = request.forms
     assert isinstance(new_user_form, FormsDict)
     user = new_user_form.newusername
@@ -143,6 +150,26 @@ def login_post():
     else:
         return admin(message="User created successfully.", message_style='success')
 
+
+@app.get('/admin_do_backup')
+def admin_do_backup():
+    su = page_init()
+
+    user_info = su.check_auth_cookie(request)
+    if user_info is None:
+        abort(403, "Forbidden")
+    if user_info[1] is False:  # superuser?
+        abort(403, "Forbidden")
+
+    backup_filename = su.take_backup()
+    assert backup_filename is not None
+
+    try:
+        backup_filename = su.take_backup()
+        msg = 'Backup successful. <a href="%s">%s</a>' % ('/static/backups/' + backup_filename, backup_filename)
+        return admin(message=msg)
+    except Exception as e:
+        return admin(message="Backup failed. [%s]" % e.message)
 
 
 if __name__ == "__main__":

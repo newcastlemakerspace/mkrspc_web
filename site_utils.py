@@ -1,6 +1,10 @@
+from __future__ import print_function
 import redis
 import hashlib
 import uuid
+import base64
+import os
+import datetime
 
 from bottle import Request, response
 from collections import defaultdict
@@ -96,6 +100,59 @@ NB: unit tests look for this text.
                 return token
             else:
                 return None
+
+    def take_backup(self):
+
+        outdir = os.path.join(static_files_root, 'backups')
+        if not os.path.exists(outdir):
+            os.mkdir(outdir)
+
+        dt = datetime.datetime
+        outfilename = "mkrspc_web_backup_%s.txt" % (dt.now().isoformat())
+        outpath = os.path.join(outdir, outfilename)
+        outf = open(outpath, 'wt')
+        
+        def wr(line):
+            print(line, file=outf)
+        
+        r = self.redis_conn
+        keys = r.keys('*')
+        wr("====BEGIN====")
+        wr(len(keys))
+        for k in keys:
+            t = r.type(k)
+            wr('--------------------------------')
+            wr(len(k))
+            wr(k)
+            wr(len(t))
+            wr(t)
+            if t == 'list':
+                list_length = r.llen(k)
+                wr('%d' % list_length)
+                list_items = r.lrange(k, 0, list_length)
+                for li in list_items:
+                    b64_li = base64.b64encode(li)
+                    wr(len(b64_li))
+                    wr(b64_li)
+
+            elif t == 'string':
+                val = r.get(k)
+                b64_val = base64.b64encode(val)
+                wr(len(b64_val))
+                wr(b64_val)
+                #if len(b64_val) < 81:
+                #    wr(b64_val)
+                #else:
+                #    print(b64_val[:80], '...')
+
+
+            else:
+                raise ValueError("Unhandled Redis value type: %s" % t)
+
+        wr("====END====")
+        outf.close()
+
+        return outfilename
 
 
     def check_auth_cookie(self, req):

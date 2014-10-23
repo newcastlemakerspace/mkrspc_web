@@ -2,9 +2,8 @@ from webtest import TestApp, TestResponse
 import redis
 from unittest import TestCase
 import hashlib
-import mkrspc_web_app
+from mkrspc_web_app import app
 from site_config import static_files_root, auth_salt_secret
-
 
 class MkrspcWebTest(TestCase):
 
@@ -26,7 +25,7 @@ class MkrspcWebTest(TestCase):
         self._make_user(alice_user, alice_passwd, redis_conn)
 
     def setUp(self):
-        self.app = TestApp(mkrspc_web_app.app, extra_environ={'debug': 'True'})
+        self.app = TestApp(app, extra_environ={'debug': 'True'})
         #for route in mkrspc_web_app.app.routes:
         #    print "App route: ", route
         #    pass
@@ -187,5 +186,12 @@ class MkrspcWebTest(TestCase):
         assert isinstance(response, TestResponse)
         self.assertEqual("200 OK", response.status)
         self.assertIn("Passwords do not match.", response.body)
+
+    def test_admin_take_backup(self):
+        self._do_admin_login()
+        response = self.app.get("/admin_do_backup")
+        assert isinstance(response, TestResponse)
+        self.assertEqual("200 OK", response.status)
+        self.assertIn("Backup successful.", response.body)
 
 

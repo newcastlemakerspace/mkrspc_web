@@ -4,8 +4,23 @@
     <p>Hi there, superuser.</p>
 </div>
 
+<h4 class='page-title'>Run backup</h4>
+<div id='backup'>
+    <p></p>
+    <div id="backup_form_container">
+        <form action="/admin_do_backup" class="loginform" method="get">
+            <ul>
+                <li>
+                    <input class="ncms_buttons" type="submit" value="Backup"
+                    name="Submit" id="backup_frm_submit" />
+                </li>
+            </ul>
+        </form>
+    </div>
+</div>
+
 <h4 class='page-title'>Add user</h4>  <!-- todo need css for all this -->
-<div id='login'>
+<div id='newuser'>
     <p></p>
     <div id="newuser_form_container">
 		<form id="add_member" class="loginform"  method="post" action="/admin_add_user">
