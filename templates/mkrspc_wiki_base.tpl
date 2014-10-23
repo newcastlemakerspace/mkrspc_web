@@ -36,7 +36,7 @@
                 %end
             </ul>
         </div> <!-- wiki-index -->
-	</div> <!-- side-nav
+	</div> <!-- side-nav -->
     <div id="page-content">
 
     %if site_message is not None:
