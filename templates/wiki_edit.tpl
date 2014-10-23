@@ -1,3 +1,4 @@
+% page_type = "wiki"
 % rebase('templates/mkrspc_wiki_base.tpl')
 
 <div class="wiki_edit_toolbar">

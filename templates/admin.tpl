@@ -1,3 +1,4 @@
+% page_type = "front"
 % rebase('templates/mkrspc_front_base.tpl')
 
 <h2 class='page-title'>Site Administration</h2>

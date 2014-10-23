@@ -8,7 +8,8 @@
     <link rel="stylesheet" href="/static/font-awesome-4.1.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="http://code.cdn.mozilla.net/fonts/fira.css">
 </head>
-<body id="home" class="wiki">
+
+<body id="home" class="{{page_type}}">
 
     <div id="side-nav">
         <div id="header">
@@ -16,23 +17,26 @@
             %if user_message is not None:
                 <div id="user-greeting-wiki"> {{!user_message}} </div>
             %end
-            <div id="navigation">
 
+            <div id="navigation">
                 {{!menu}}
             </div>
+
         </div> <!-- header -->
-		<h4 class="wiki_index">Wiki index</h4>
-        <ul class="wiki_index">
-           %for cat in wiki_index:
-             <li class="wiki_index">{{cat[1]}}</li>
-             <ul class="wiki_index">
-             %for subcat in cat[2]:
-                <li class="wiki_index"><a href="/wiki/subcat/{{subcat[0]}}">{{subcat[1]}}</a></li>
-             %end
-             </ul>
-           %end
-        </ul>
-	</div>
+        <div id="wiki-index">
+            <h4 class="wiki_index">Wiki index</h4>
+            <ul class="wiki_index">
+                %for cat in wiki_index:
+                    <li class="wiki_index">{{cat[1]}}</li>
+                    <ul class="wiki_index">
+                    %for subcat in cat[2]:
+                        <li class="wiki_index"><a href="/wiki/subcat/{{subcat[0]}}">{{subcat[1]}}</a></li>
+                    %end
+                    </ul>
+                %end
+            </ul>
+        </div> <!-- wiki-index -->
+	</div> <!-- side-nav
     <div id="page-content">
 
     %if site_message is not None:
@@ -41,6 +45,6 @@
 
     {{!base}}
 
-    </div>
+    </div> <!-- page content -->
 </body>
 </html>

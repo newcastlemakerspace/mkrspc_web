@@ -1,3 +1,4 @@
+% page_type = "wiki"
 % rebase('templates/mkrspc_wiki_base.tpl')
 
 %if allow_edit == True:
