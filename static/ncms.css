@@ -266,6 +266,12 @@ ul.wiki_index li {
     margin-top: 0.5em;
 }
 
+ul.category-page-list {
+    -moz-column-count: 4;
+    -webkit-column-count: 4;
+    -column-count: 4;
+}
+
 h4.wiki_index {
     margin-top: 1.5em;
     margin-bottom: 0em;
