@@ -247,9 +247,8 @@ body.wiki #page-content {
 }
 
 a.wiki_internal {
-    color: #009FDA;
+    color: #00DA9F;
     text-decoration: underline;
-    background: #222222;
 }
 
 a.wiki_index  {

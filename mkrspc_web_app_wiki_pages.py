@@ -167,7 +167,7 @@ def wiki_subcat(subcat_id, site_message=None):
         art_title_key = 'wiki_article_title_%s' % art_id
         art_title = r.get(art_title_key)
 
-        html += u'<li class="category-page"><a href="/wiki/%s">%s</a></li>' % (art_slug, art_title)
+        html += u'<li class="category-page"><a class="wiki_internal" href="/wiki/%s">%s</a></li>' % (art_slug, art_title)
 
     html += u'</ul>'
     html = u"".join(html)
