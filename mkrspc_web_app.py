@@ -61,20 +61,6 @@ def about():
     }
     return context
 
-
-@app.route('/contact')
-@view('templates/contact')
-def about():
-    su = page_init()
-    user_info = su.check_auth_cookie(request)
-    context = {
-        'title': "Contact - Newcastle Makerspace",
-        'menu': su.menu('sel_contact', user_info),
-        'user_message': su.user_greeting(user_info),
-        'site_message': None
-    }
-    return context
-
 @app.route('/admin')
 @view('templates/admin')
 def admin(message=None, message_style=None):

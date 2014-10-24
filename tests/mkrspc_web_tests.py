@@ -61,14 +61,6 @@ class MkrspcWebTest(TestCase):
         self.assertIn("<title>About - Newcastle Makerspace</title>", response.body)
         self.assertIn("was started in early 2014", response.body)
 
-    def test_contact(self):
-        response = self.app.get("/contact")
-        assert isinstance(response, TestResponse)
-        self.assertEqual("200 OK", response.status)
-        #print response.body
-        self.assertIn("<title>Contact - Newcastle Makerspace</title>", response.body)
-        self.assertIn("21 Gordon Avenue", response.body)
-
     def test_login_page_unauthed(self):
         response = self.app.post("/login", params={'username': 'Bob', 'password': 'test'})
         assert isinstance(response, TestResponse)

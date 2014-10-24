@@ -1,4 +1,5 @@
-% include('templates/mkrspc_front_header.tpl')
+% page_type = "front"
+% rebase('templates/mkrspc_front_base.tpl')
 
 <h2 class='page-title'>About</h2>
 <div id='content'>
@@ -16,4 +17,3 @@
     <p>Some links to wiki pages could go here.</p> -->
 </div>
 
-% include('templates/mkrspc_front_footer.tpl')

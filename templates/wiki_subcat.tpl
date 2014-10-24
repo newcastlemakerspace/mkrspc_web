@@ -1,4 +1,5 @@
-% include('templates/mkrspc_wiki_header.tpl')
+% page_type = "wiki"
+% rebase('templates/mkrspc_wiki_base.tpl')
 
 {{!main_content}}
 
@@ -17,7 +18,7 @@
                 </div>
             </li>
             <li >
-                <label class="description" for="article_slug">Slug - (use CamelCase with no spaces, e.g. ArticleTitle)</label>
+                <label class="description" for="article_slug">Slug (URL string - use only <code>[A-Za-z0-9_-()]</code>)</label>
                 <div>
                     <input id="article_slug" name="article_slug" class="element text medium" type="text" maxlength="255" value=""/>
                 </div>
@@ -36,4 +37,3 @@
 
 %end
 
-% include('templates/mkrspc_wiki_footer.tpl')
