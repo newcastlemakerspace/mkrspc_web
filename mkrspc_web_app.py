@@ -1,30 +1,27 @@
 from __future__ import print_function
 
-import markdown
-import redis
-import hashlib
-import uuid
-
-from bottle import request, response, run, template, Bottle, view, abort, Request, redirect
+from bottle import request, response, run, Bottle, view, abort, redirect
 from bottle import static_file
 from bottle import FormsDict
-from collections import defaultdict
 
-from site_config import static_files_root, auth_salt_secret
+from site_config import static_files_root
 from site_utils import SiteUtils
 from mkrspc_web_app_wiki_pages import wiki_app
 
 app = Bottle(catchall=False)
 app.merge(wiki_app)
 
+
 def page_init():
     su = SiteUtils()
     return su
+
 
 @app.route('/static/<filepath:path>')
 def server_static(filepath):
     configured_static_filepath = static_files_root
     return static_file(filepath, root=configured_static_filepath)
+
 
 @app.route('/')
 @view('templates/home')
@@ -48,6 +45,7 @@ def index(message=None):
 
     return context
 
+
 @app.route('/about')
 @view('templates/about')
 def about():
@@ -60,6 +58,7 @@ def about():
         'site_message': None
     }
     return context
+
 
 @app.route('/admin')
 @view('templates/admin')
@@ -84,11 +83,13 @@ def admin(message=None, message_style=None):
     }
     return context
 
+
 @app.get('/logout')
 def logout():
     su = page_init()
     su.remove_auth_cookie(request)
     return index()
+
 
 @app.post('/login')
 def login_post():
@@ -104,6 +105,7 @@ def login_post():
         redirect('/')
     else:
         return index(message="Login failed, invalid username or password.")
+
 
 @app.post('/admin_add_user')
 def admin_add_user():

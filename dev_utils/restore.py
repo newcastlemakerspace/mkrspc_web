@@ -51,7 +51,6 @@ class ListRecord(object):
 class WebBackupRestore(object):
 
     def __init__(self, input_file):
-
         self.input_file = input_file
         self.string_records = []
         self.list_records = []
@@ -106,7 +105,6 @@ class WebBackupRestore(object):
         print "Lists     : %d" % len(self.list_records)
         print "-------------------------------"
 
-
     def load(self):
 
         f = open(self.input_file, 'rt')
@@ -118,12 +116,11 @@ class WebBackupRestore(object):
         key_length = 0
         key = None
         value_type_length = 0
-        value_type = None
         string_value_length = 0
-        string_value = None
         list_length = 0
         list_value_length = 0
         list_values_loaded = 0
+
         for line in f:
 
             # lose the CR/LF
@@ -230,7 +227,6 @@ class WebBackupRestore(object):
                 raise Exception('Unhandled state: %s' % state)
 
             line_num += 1
-
 
 
 if __name__ == '__main__':

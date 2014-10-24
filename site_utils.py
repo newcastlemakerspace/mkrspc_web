@@ -5,16 +5,13 @@ import uuid
 import base64
 import os
 import datetime
-
 from bottle import Request, response
-from collections import defaultdict
 from site_config import static_files_root, auth_salt_secret, REDIS_DB
 
 
 class SiteUtils(object):
 
     def __init__(self):
-
         self.redis_conn = self.connect_redis()
 
     def connect_redis(self):
@@ -49,7 +46,6 @@ NB: unit tests look for this text.
         article_slug = 'TestPage'
         article_name = "Makerspace Wiki Test Page"
         self.create_wiki_page(article_slug, article_name, default_text)
-
 
     def _init_superuser(self):
         self.redis_conn.delete('mkrspc_superusers')
@@ -131,18 +127,11 @@ NB: unit tests look for this text.
                     b64_li = base64.b64encode(li)
                     wr(len(b64_li))
                     wr(b64_li)
-
             elif t == 'string':
                 val = r.get(k)
                 b64_val = base64.b64encode(val)
                 wr(len(b64_val))
                 wr(b64_val)
-                #if len(b64_val) < 81:
-                #    wr(b64_val)
-                #else:
-                #    print(b64_val[:80], '...')
-
-
             else:
                 raise ValueError("Unhandled Redis value type: %s" % t)
 
