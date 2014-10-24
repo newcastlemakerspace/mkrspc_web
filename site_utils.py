@@ -91,8 +91,8 @@ NB: unit tests look for this text.
             if hex_dig == user_passwd_record:
                 # The passwords match OK, so create a token.
                 token = str(uuid.uuid4())
-                # Store token in Redis.
-                r.set(('User_Auth_Cookie_%s' % token), user)
+                # Store token in Redis. (Valid for 1000 milli-fortnights.)
+                r.setex(('User_Auth_Cookie_%s' % token), user, 60 * 60 * 24 * 14)
                 # Return token to be set as a cookie.
                 return token
             else:
