@@ -31,7 +31,7 @@
                     <li class="wiki_index">{{cat[1]}}</li>
                     <ul class="wiki_index">
                     %for subcat in cat[2]:
-                        <li class="wiki_index"><a href="/wiki/subcat/{{subcat[0]}}">{{subcat[1]}}</a></li>
+                        <li class="wiki_index"><a href="/wiki/subcat/{{subcat[0]}}">{{subcat[1]}}</a> ({{subcat[2]}})</li>
                     %end
                     </ul>
                 %end

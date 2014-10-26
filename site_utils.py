@@ -256,7 +256,12 @@ NB: unit tests look for this text.
             for sc_key in subcat_keys:
                 subcat = r.get(sc_key)
                 #print(" - sub %s %s" % (sc_key, subcat))
-                subcats.append((sc_key, subcat,))
+                print(sc_key)
+                sc_artlist_key = "wiki_subcat_articles_%s" % sc_key
+                print(sc_artlist_key)
+
+                subcat_article_count = r.llen(sc_artlist_key)
+                subcats.append((sc_key, subcat, subcat_article_count))
 
             cats.append((cat_key, cat, subcats))
 
