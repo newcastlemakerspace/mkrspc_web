@@ -9,23 +9,22 @@ from wiki_utils import WikiUtils
 
 class MkrspcWebTest(TestCase):
 
-    def _make_user(self, username, password):
-        hash_object = hashlib.sha256(auth_salt_secret + password)
-        hex_dig = hash_object.hexdigest()
-        self.r.set('User_Pwd_%s' % username, hex_dig)
-
-    def _dummy_users(self):
-        self.r.delete('mkrspc_superusers')
-        self.r.lpush('mkrspc_superusers', u'dkpw')
-
-        dkpw_passwd = u'password1'
-        dkpw_user = u'dkpw'
-        self._make_user(dkpw_user, dkpw_passwd)
-
-        alice_passwd = u'puppies'
-        alice_user = u'alice'
-        self._make_user(alice_user, alice_passwd)
-
+    # def _make_user(self, username, password):
+    #     hash_object = hashlib.sha256(auth_salt_secret + password)
+    #     hex_dig = hash_object.hexdigest()
+    #     self.r.set('User_Pwd_%s' % username, hex_dig)
+    #
+    # def _dummy_users(self):
+    #     self.r.delete('mkrspc_superusers')
+    #     self.r.lpush('mkrspc_superusers', u'dkpw')
+    #
+    #     dkpw_passwd = u'password1'
+    #     dkpw_user = u'dkpw'
+    #     self._make_user(dkpw_user, dkpw_passwd)
+    #
+    #     alice_passwd = u'puppies'
+    #     alice_user = u'alice'
+    #     self._make_user(alice_user, alice_passwd)
 
     def _do_admin_login(self):
         response = self.app.post("/login", params={'username': 'dkpw', 'password': 'password1'})
@@ -38,21 +37,20 @@ class MkrspcWebTest(TestCase):
         self.app = TestApp(app, extra_environ={'debug': 'True'})
         #for route in mkrspc_web_app.app.routes:
         #    print "App route: ", route
-        #    pass
-
 
         self.r = redis.Redis(db=3)  # 3 for testing
         # commented out just in case...
         self.r.flushdb()
 
         self.wu = WikiUtils(self.r)
-        self.wu.create_wiki_root_category()
+        #self.wu.create_wiki_root_category()
 
-        self._dummy_users()
+        #self._dummy_users()
 
     def test_aardvark_redis_db_is_empty_at_tests_start(self):
         keycount = len(self.r.keys('*'))
-        self.assertEqual(keycount, 4)  # 2 users, superuser list, wiki root
+        self.assertEqual(keycount, 0)
+        # 2 users, superuser list, wiki root id, wiki root name
 
     def test_static_config(self):
         import os
@@ -101,12 +99,13 @@ class MkrspcWebTest(TestCase):
         self.assertTrue(len(response.body) > 0)
         self.assertIn("""<div id="user-greeting">Hail <a href="/user_profile">dkpw</a> - <a href="/logout">log out</a></div>""", response.body)
 
-    def test_wiki_page_read(self):
-        response = self.app.get("/wiki/TestPage")
+    def test_wiki_badgers_page_read(self):
+        response = self.app.get("/wiki/Badgers")
         #print response.body
         self.assertTrue(len(response.body) > 0)
-        self.assertIn("<em>italic</em>", response.body)
-        self.assertIn("<strong>bold</strong>", response.body)
+        self.assertIn("<h1>Test article about badgers</h1>", response.body)
+        self.assertIn("<p>We like <strong>badgers</strong> because badgers are <em>awesome</em></p>", response.body)
+        self.assertIn("<p>NB: unit tests look for this text.</p>", response.body)
 
     def test_wiki_index_read(self):
         response = self.app.get("/wiki/Index")
@@ -186,17 +185,17 @@ class MkrspcWebTest(TestCase):
         self.assertIn("Backup successful.", response.body)
 
     def test_create_category_direct(self):
+        self.wu.create_wiki_root_category()
         cat_name = "TestCategory"
         wiki_root_cat_id = self.wu.wiki_root_category()
         print "Wiki root id is: %s" % wiki_root_cat_id
-        self.wu.create_wiki_category(cat_name, wiki_root_cat_id)
+        self.wu.create_wiki_category(wiki_root_cat_id, cat_name)
         cats = self.wu.wiki_root_categories()
         existing_cat_names = []
         for cat_id in cats:
             existing_cat_names.append(self.wu.name_for_wiki_cat_id(cat_id))
 
         self.assertIn(cat_name, existing_cat_names)
-
 
     def test_create_category_via_page(self):
         self._do_admin_login()
@@ -205,17 +204,26 @@ class MkrspcWebTest(TestCase):
         assert isinstance(response, TestResponse)
         self.assertEqual("200 OK", response.status)
         cat_name = "TestCategory"
-        wiki_root_cat_id = self._get_wiki_root_category()
+        wiki_root_cat_id = self.wu.wiki_root_category()
         print "Wiki root id is: %s" % wiki_root_cat_id
-        response = self.app.post("/wiki/add_category", params={'category': cat_name, 'parent': wiki_root_cat_id })
+        response = self.app.post("/wiki/add_category", params={'category_name': cat_name, 'parent': wiki_root_cat_id})
         self.assertEqual("200 OK", response.status)
-        cats = self._wiki_root_categories()
+        cats = self.wu.wiki_root_categories()
         existing_cat_names = []
         for cat_id in cats:
-            existing_cat_names.append(self._name_for_cat_id(cat_id))
+            existing_cat_names.append(self.wu.name_for_wiki_cat_id(cat_id))
 
         self.assertIn(cat_name, existing_cat_names)
 
+    def test_create_category_via_page_bad_id(self):
+        self._do_admin_login()
+        # check admin page
+        response = self.app.get("/admin")
+        assert isinstance(response, TestResponse)
+        self.assertEqual("200 OK", response.status)
+        cat_name = "TestCategoryZ"
+        cat_id = "notarealuuid"
+        response = self.app.post("/wiki/add_category", params={'category_name': cat_name, 'parent': cat_id})
 
 
     def test_aardvark_wiki_new_article_in_category(self):
@@ -225,8 +233,8 @@ class MkrspcWebTest(TestCase):
         assert isinstance(response, TestResponse)
         self.assertEqual("200 OK", response.status)
         cat_name = "CategoryA"
-        root_cat_id = self._get_root_category_id()
-        new_cat_id = self._create_category(root_cat_id, cat_name)
+        root_cat_id = self.wu.wiki_root_category()
+        new_cat_id = self.wu.create_wiki_category(root_cat_id, cat_name)
 
         response = self.app.post(
             '/wiki/new_article',
@@ -238,9 +246,13 @@ class MkrspcWebTest(TestCase):
         )
 
         self.assertEqual("200 OK", response.status)
-        cats = self._wiki_root_categories()
-        cat_record = self.r.get("wiki_cat_%s" % cat_name)
-        self.assertIsNotNone(cat_record)
+        cats = self.wu.wiki_root_categories()
+
+        existing_cat_names = []
+        for cat_id in cats:
+            existing_cat_names.append(self.wu.name_for_wiki_cat_id(cat_id))
+
+        self.assertIn(cat_name, existing_cat_names)
 
 
 

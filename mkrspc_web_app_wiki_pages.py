@@ -6,8 +6,7 @@ import uuid
 from bottle import request, template, Bottle, abort, redirect
 from bottle import FormsDict
 
-
-from site_utils import SiteUtils  # check_auth_cookie, connect_redis, menu, user_greeting, wiki_index
+from site_utils import SiteUtils
 
 wiki_app = Bottle()
 
@@ -270,6 +269,7 @@ def wiki_new_article():
 def add_wiki_category():
 
     su = SiteUtils()
+    wu = su.wu
     user_info = su.check_auth_cookie(request)
 
     if user_info is None:
@@ -281,19 +281,28 @@ def add_wiki_category():
     cat_form = request.forms
     assert isinstance(cat_form, FormsDict)
     cat_name = cat_form.category_name
-    cat_name = cat_name.strip()
-    print(cat_name)
-    bad_chars = _safe_wiki_category_name(cat_name)
+    parent_cat_id = cat_form.parent
+
+    print("Add_wiki_category page got: ", cat_name, parent_cat_id)
     bad_cat_message = None
+
+    cat_name = cat_name.strip()
+    try:
+        parent_cat_as_uuid = uuid.UUID(parent_cat_id)
+    except ValueError as e:
+        bad_cat_message = "Invalid parent category ID"
+
+    bad_chars = _safe_wiki_category_name(cat_name)
+
     if bad_chars is not None:
         bad_cat_message = u"Sorry, these characters are not allowed: %s" % u" ".join(bad_chars)
-        print(bad_cat_message)
+
 
     if bad_cat_message is None:
-        cat_key = "wiki_cat_%s" % str(uuid.uuid4())
-        r = su.redis_conn
-        r.set(cat_key, cat_name)
-        r.lpush("wiki_cats", cat_key)
+        wiki_root_id = wu.wiki_root_category()
+        wu.create_wiki_category(wiki_root_id, cat_name)
+    else:
+        print("Create category failed: %s" % bad_cat_message)
 
     context = {
         'title': u"Admin - Newcastle Makerspace",

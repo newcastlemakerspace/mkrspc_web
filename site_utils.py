@@ -7,12 +7,14 @@ import os
 import datetime
 from bottle import Request, response
 from site_config import static_files_root, auth_salt_secret, REDIS_DB
-
+from wiki_utils import WikiUtils
 
 class SiteUtils(object):
 
     def __init__(self):
         self.redis_conn = self.connect_redis()
+        self.wu = WikiUtils(self.redis_conn)
+        self._check_db_version()  # will create initial data if missing
 
     def connect_redis(self):
         # TODO connection pooling
@@ -27,25 +29,28 @@ class SiteUtils(object):
         self.redis_conn.set('User_Pwd_%s' % username, hex_dig)
 
     def _init_wiki(self):
+
+        root_id = self.wu.create_wiki_root_category()
+
         default_text = """***Root article"""
         article_slug = 'Index'
         article_name = "Makerspace Wiki Index Page"
-        self.create_wiki_page(article_slug, article_name, default_text)
+        self.wu.create_wiki_article(root_id, article_slug, article_name, default_text)
 
         default_text = """
-Test article
+Test article about badgers
 ===
 
-This text is _italic_
-
-This text is __bold__
+We like __badgers__ because badgers are _awesome_
 
 NB: unit tests look for this text.
 
         """
-        article_slug = 'TestPage'
-        article_name = "Makerspace Wiki Test Page"
-        self.create_wiki_page(article_slug, article_name, default_text)
+        article_slug = 'Badgers'
+        article_name = "Test Page About Badgers"
+
+        self.wu.create_wiki_category(root_id, "Test Category B")
+        self.wu.create_wiki_article(root_id, article_slug, article_name, default_text)
 
     def _init_superuser(self):
         self.redis_conn.delete('mkrspc_superusers')
@@ -58,7 +63,7 @@ NB: unit tests look for this text.
         alice_user = u'alice'
         self.make_user(alice_user, alice_passwd)
 
-    def check_db_version(self):
+    def _check_db_version(self):
         key = 'mkrspc_db_version'
         r = self.redis_conn
         db_version = r.get(key)

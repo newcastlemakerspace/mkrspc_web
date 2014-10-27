@@ -27,7 +27,7 @@ def server_static(filepath):
 @view('templates/home')
 def index(message=None):
     su = page_init()  # su = a SiteUtils instance
-    su.check_db_version()
+    #su.check_db_version()
     user_info = su.check_auth_cookie(request)
     #print(user_info)
     if user_info is None:
