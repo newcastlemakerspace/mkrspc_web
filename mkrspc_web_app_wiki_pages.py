@@ -132,9 +132,9 @@ def wiki_edit_page(slug):
     return template('templates/wiki_edit', context)
 
 
-@wiki_app.route('/wiki/subcat/<subcat_id>/')
-@wiki_app.route('/wiki/subcat/<subcat_id>')
-def wiki_subcat(subcat_id, site_message=None):
+@wiki_app.route('/wiki/cat/<cat_id>/')
+@wiki_app.route('/wiki/cat/<cat_id>')
+def wiki_cat(cat_id, site_message=None):
 
     su = SiteUtils()
     categories = su.wiki_index()
@@ -143,20 +143,22 @@ def wiki_subcat(subcat_id, site_message=None):
     if user_info is not None:
         editable = True
 
-    subcat_name = None
+    #subcat_name = None
     maincat_name = None
 
-    for c in categories:
-        for sc in c[2]:
-            if sc[0] == subcat_id:
-                subcat_name = sc[1]
-                maincat_name = c[1]
+    #for c in categories:
+        #maincat_name = c[1]
+        #for sc in c[2]:
+        #    maincat_name = c[1]
+            #if sc[0] == subcat_id:
+                #subcat_name = sc[1]
 
     print("looking for articles:")
 
-    html = [u'<h3 class="page-title">Wiki > %s > %s</h3>' % (maincat_name, subcat_name)]
+    #html = [u'<h3 class="page-title">Wiki > %s > %s</h3>' % (maincat_name, subcat_name)]
+    html = [u'<h3 class="page-title">Wiki > %s</h3>' % (maincat_name)]
     r = su.redis_conn
-    articles = r.lrange('wiki_subcat_articles_' + subcat_id, 0, 999)
+    articles = r.lrange('wiki_cat_articles_' + cat_id, 0, 999)
 
     html += u'<p>%d articles:</p>\n<ul class="category-page-list">' % len(articles)
 
@@ -180,10 +182,10 @@ def wiki_subcat(subcat_id, site_message=None):
         'user_message': su.user_greeting(user_info),
         'wiki_index': categories,
         'site_message': site_message,
-        'subcategory_id': subcat_id
+        'category_id': cat_id
     }
 
-    return template('templates/wiki_subcat', context)
+    return template('templates/wiki_cat', context)
 
 
 @wiki_app.post('/wiki/update_article')
@@ -226,28 +228,28 @@ def wiki_new_article():
     if user_info is None:
         abort(403, "Forbidden")
 
-    # form is defined in wiki_subcat.tpl
+    # form is defined in wiki_cat.tpl
     article_form = request.forms
     assert isinstance(article_form, FormsDict)
     article_name = article_form.article_title.strip()
     article_slug = article_form.article_slug.strip()
-    subcat_id = article_form.article_subcat_id
+    cat_id = article_form.article_cat_id
 
     if len(article_slug) == 0:
-        return wiki_subcat(subcat_id, site_message="No article slug given.")
+        return wiki_cat(cat_id, site_message="No article slug given.")
 
     if len(article_name) == 0:
-        return wiki_subcat(subcat_id, site_message="No article name given.")
+        return wiki_cat(cat_id, site_message="No article name given.")
 
     bad_chars = _safe_wiki_article_slug(article_slug)
     if bad_chars is not None:
         bad_slug_message = u"Sorry, these characters are not allowed in an article slug: %s" % u" ".join(bad_chars)
-        return wiki_subcat(subcat_id, site_message=bad_slug_message)
+        return wiki_cat(cat_id, site_message=bad_slug_message)
 
     bad_chars = _safe_wiki_article_name(article_name)
     if bad_chars is not None:
         bad_cat_message = u"Sorry, these characters are not allowed in an article name: %s" % u" ".join(bad_chars)
-        return wiki_subcat(subcat_id, site_message=bad_cat_message)
+        return wiki_cat(cat_id, site_message=bad_cat_message)
 
     #print("OK, we have a good article: %s %s" % (article_slug, article_name))
 
@@ -259,7 +261,7 @@ def wiki_new_article():
     r.set('wiki_slug_%s' % article_slug, article_id)
     r.set('wiki_article_slug_%s' % article_id, article_slug)
     r.set('wiki_article_title_%s' % article_id, article_name)
-    r.lpush("wiki_subcat_articles_%s" % subcat_id, article_id)
+    r.lpush("wiki_cat_articles_%s" % cat_id, article_id)
 
     return wiki(article_slug)
 
@@ -303,46 +305,46 @@ def add_wiki_category():
 
     return template('templates/admin', context)
 
-
-@wiki_app.post('/wiki/add_subcategory')
-def add_wiki_subcategory():
-
-    su = SiteUtils()
-    user_info = su.check_auth_cookie(request)
-
-    if user_info is None:
-        abort(403, "Forbidden")
-    if user_info[1] is False:  # superuser?
-        abort(403, "Forbidden")
-
-    # form is defined in admin.tpl
-    sub_cat_form = request.forms
-    assert isinstance(sub_cat_form, FormsDict)
-    main_cat_id = sub_cat_form.main_category
-    # todo Check that maincat exists
-    sub_cat_name = sub_cat_form.subcategory_name
-    sub_cat_name = sub_cat_name.strip()
-    sub_cat_id = 'wiki_subcat_%s' % str(uuid.uuid4())
-    print("new subcat: ", main_cat_id, sub_cat_id, sub_cat_name)
-    bad_chars = _safe_wiki_category_name(sub_cat_name)
-    bad_cat_message = None
-    if bad_chars is not None:
-        bad_cat_message = u"Sorry, these characters are not allowed: %s" % u" ".join(bad_chars)
-        print(bad_cat_message)
-
-    if bad_cat_message is None:
-        subcats_key = "wiki_subcats_%s" % main_cat_id
-        r = su.redis_conn
-        r.lpush(subcats_key, sub_cat_id)
-        r.set(sub_cat_id, sub_cat_name)
-
-    context = {
-        'title': u"Admin - Newcastle Makerspace",
-        'menu': su.menu('sel_admin', user_info, nav_style='default'),
-        'user_message': su.user_greeting(user_info),
-        'site_message': bad_cat_message,
-        'wiki_categories': su.wiki_index(),
-        'subcategory_id': sub_cat_id
-    }
-
-    return template('templates/admin', context)
+#
+# @wiki_app.post('/wiki/add_subcategory')
+# def add_wiki_subcategory():
+#
+#     su = SiteUtils()
+#     user_info = su.check_auth_cookie(request)
+#
+#     if user_info is None:
+#         abort(403, "Forbidden")
+#     if user_info[1] is False:  # superuser?
+#         abort(403, "Forbidden")
+#
+#     # form is defined in admin.tpl
+#     sub_cat_form = request.forms
+#     assert isinstance(sub_cat_form, FormsDict)
+#     main_cat_id = sub_cat_form.main_category
+#     # todo Check that maincat exists
+#     sub_cat_name = sub_cat_form.subcategory_name
+#     sub_cat_name = sub_cat_name.strip()
+#     sub_cat_id = 'wiki_subcat_%s' % str(uuid.uuid4())
+#     print("new subcat: ", main_cat_id, sub_cat_id, sub_cat_name)
+#     bad_chars = _safe_wiki_category_name(sub_cat_name)
+#     bad_cat_message = None
+#     if bad_chars is not None:
+#         bad_cat_message = u"Sorry, these characters are not allowed: %s" % u" ".join(bad_chars)
+#         print(bad_cat_message)
+#
+#     if bad_cat_message is None:
+#         subcats_key = "wiki_subcats_%s" % main_cat_id
+#         r = su.redis_conn
+#         r.lpush(subcats_key, sub_cat_id)
+#         r.set(sub_cat_id, sub_cat_name)
+#
+#     context = {
+#         'title': u"Admin - Newcastle Makerspace",
+#         'menu': su.menu('sel_admin', user_info, nav_style='default'),
+#         'user_message': su.user_greeting(user_info),
+#         'site_message': bad_cat_message,
+#         'wiki_categories': su.wiki_index(),
+#         'subcategory_id': sub_cat_id
+#     }
+#
+#     return template('templates/admin', context)

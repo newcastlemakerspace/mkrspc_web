@@ -233,15 +233,23 @@ NB: unit tests look for this text.
                 return 'Hi ' + links
         else:
             return None
-
-    def create_wiki_page(self, slug, title, body):
-        r = self.redis_conn
-        article_id = str(uuid.uuid4())
-        art_key = 'wiki_article_%s' % article_id
-        r.set(art_key, body)
-        r.set('wiki_slug_%s' % slug, article_id)
-        r.set('wiki_article_slug_%s' % article_id, slug)
-        r.set('wiki_article_title_%s' % article_id, title)
+    #
+    # def create_wiki_page(self, slug, title, body):
+    #     r = self.redis_conn
+    #     article_id = str(uuid.uuid4())
+    #     art_key = 'wiki_article_%s' % article_id
+    #     r.set(art_key, body)
+    #     r.set('wiki_slug_%s' % slug, article_id)
+    #     r.set('wiki_article_slug_%s' % article_id, slug)
+    #     r.set('wiki_article_title_%s' % article_id, title)
+    #
+    # def create_wiki_category(self, cat_name):
+    #     r = self.redis_conn
+    #     cat_id = str(uuid.uuid4())
+    #     cat_key = "wiki_cat_%s" % cat_id
+    #     r.set(cat_key, cat_name)
+    #     r.lpush("wiki_cats", cat_key)
+    #     return cat_id
 
     def wiki_index(self):
         r = self.redis_conn
@@ -256,13 +264,19 @@ NB: unit tests look for this text.
             for sc_key in subcat_keys:
                 subcat = r.get(sc_key)
                 #print(" - sub %s %s" % (sc_key, subcat))
-                print(sc_key)
-                sc_artlist_key = "wiki_subcat_articles_%s" % sc_key
-                print(sc_artlist_key)
-
-                subcat_article_count = r.llen(sc_artlist_key)
-                subcats.append((sc_key, subcat, subcat_article_count))
+                subcats.append((sc_key, subcat,))
 
             cats.append((cat_key, cat, subcats))
 
         return cats
+
+    def wiki_root_categories(self):
+        r = self.redis_conn
+        cat_count = r.llen("wiki_cats")
+        cats = r.lrange("wiki_cats", 0, cat_count)
+        return cats
+
+            #"wiki_cat_%s" % str(uuid.uuid4())
+        #r.set(cat_key, cat_name)
+        #r.lpush("wiki_cats", cat_key)
+
