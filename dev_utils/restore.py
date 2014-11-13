@@ -233,8 +233,8 @@ if __name__ == '__main__':
 
     db = 3
     #input_file = '/dkpw_1TB/development/felix/makerspace/mkrspc_web/static/backups/mkrspc_web_backup_2014-10-23T14:23:49.354552.txt'
-    input_file = '/dkpw_1TB/development/felix/makerspace/mkrspc_web/static/backups/mkrspc_web_backup_2014-10-23T21-34-01.495315 (1).txt'
-
+    #input_file = '/dkpw_1TB/development/felix/makerspace/mkrspc_web/static/backups/mkrspc_web_backup_2014-10-23T21-34-01.495315 (1).txt'
+    input_file = '/dkpw_1TB/development/felix/makerspace/mkrspc_web/dev_utils/mkrspc_web_backup_2014-11-13T09 20 26.824244.txt'
     restorer = WebBackupRestore(input_file)
     restorer.load()
     restorer.show_stats()

@@ -4,11 +4,6 @@
 <h2 class='page-title'>Home</h2>
 <div id='content'>
 
-    <div id="osm-map">
-        <iframe width="425" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="http://www.openstreetmap.org/export/embed.html?bbox=151.74431204795837%2C-32.92711234001095%2C151.75965428352356%2C-32.91923227704827&amp;layer=mapnik&amp;marker=-32.92317239624756%2C151.75198316574097" style="border: 1px solid black"></iframe>
-        <br/>
-        <small><a href="http://www.openstreetmap.org/?mlat=-32.9232&amp;mlon=151.7519#map=16/-32.9232/151.7519&amp;layers=N">View Larger Map</a></small>
-    </div>
 
     <p>Newcastle Makerspace is at <strong>21 Gordon St, Hamilton</strong>, around the back, through the gate.</p>
 
@@ -23,6 +18,11 @@
 
 
     <h3>Contact and links</h3>
+    <div id="osm-map">
+        <iframe width="425" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="http://www.openstreetmap.org/export/embed.html?bbox=151.74431204795837%2C-32.92711234001095%2C151.75965428352356%2C-32.91923227704827&amp;layer=mapnik&amp;marker=-32.92317239624756%2C151.75198316574097" style="border: 1px solid black"></iframe>
+        <br/>
+        <small><a href="http://www.openstreetmap.org/?mlat=-32.9232&amp;mlon=151.7519#map=16/-32.9232/151.7519&amp;layers=N">View Larger Map</a></small>
+    </div>
 
     <p>
         Our main method of communication is our <a href="http://newcastlelug.org/mailman/listinfo/makerspace_newcastlelug.org">Mailing List</a>.

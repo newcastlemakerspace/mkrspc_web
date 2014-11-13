@@ -28,10 +28,13 @@
             <h4 class="wiki_index">Wiki index</h4>
             <ul class="wiki_index">
                 %for cat in wiki_index:
-                    <li class="wiki_index">{{cat[1]}}</li>
+                    <li class="wiki_index"><a href="/wiki/category/{{cat[0]}}">{{cat[1]}} ({{len(cat[2])}})</a></li>
                     <ul class="wiki_index">
-                    %for subcat in cat[2]:
-                        <li class="wiki_index"><a href="/wiki/subcat/{{subcat[0]}}">{{subcat[1]}}</a> ({{subcat[2]}})</li>
+                    %for article in cat[2]:
+                        <li class="wiki_index"><a href="/wiki/{{article[0]}}">{{article[1]}}</a></li>
+                    %end
+                    %for subcat in cat[3]:
+                        <li class="wiki_index"><a href="/wiki/category/{{subcat[0]}}">{{subcat[1]}}</a> ({{subcat[2]}})</li>
                     %end
                     </ul>
                 %end

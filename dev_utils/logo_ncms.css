@@ -1,0 +1,65 @@
+
+body {
+    height: 600px;
+    padding: 0em;
+    font-family: "Fira Sans", "Open Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+    background: #000000 url('background.png') bottom repeat-x fixed;
+    margin: 0px;
+    color: #cccccc;
+    text-rendering: optimizeLegibility;
+}
+
+/* HEADER STUFF */
+
+.site-name {
+    margin: 0.2em 0px 0px 0px;
+    color: #ffffff;
+    text-shadow: 7px 7px 12px #999999;
+    font-size: 5.8em;
+    font-weight: bold;
+    padding-left: 2em;
+    margin-top: 0.4em;
+}
+
+#site-name.right {
+    text-align: right;
+}
+
+#site-name.left {
+    text-align: left;
+}
+
+
+
+#page-content {
+    background: rgba(16,16,16,0.8);
+}
+
+#content {
+    padding: 0 1em;
+}
+
+#content h1, #content h2, #content h3, #content h4, #content h5, #content h6 {
+    background: #000;
+    padding: 0.2em 0.5em 0.1em;
+}
+
+.front #osm-map {
+    float: right;
+    margin-left: 1em;
+    margin-bottom: 1em;
+}
+
+/* forms */
+
+#member_login li {
+    //list-style-type: none;
+    padding: 1 em;
+    margin-top: 20px;
+}
+
+form.loginform ul {
+    list-style-type: none;
+    padding: 1 em;
+    margin-top: 20px;
+}
