@@ -44,7 +44,7 @@ def wiki(slug):
 
     su = SiteUtils()
     categories = su.wiki_index()
-    #print("Wiki page: ", categories)
+    print("Wiki page: ", categories)
 
     user_info = su.check_auth_cookie(request)
     editable = False
@@ -131,8 +131,8 @@ def wiki_edit_page(slug):
     return template('templates/wiki_edit', context)
 
 
-@wiki_app.route('/wiki/cat/<cat_id>/')
-@wiki_app.route('/wiki/cat/<cat_id>')
+@wiki_app.route('/wiki/category/<cat_id>/')
+@wiki_app.route('/wiki/category/<cat_id>')
 def wiki_cat(cat_id, site_message=None):
 
     su = SiteUtils()
@@ -142,22 +142,13 @@ def wiki_cat(cat_id, site_message=None):
     if user_info is not None:
         editable = True
 
-    #subcat_name = None
-    maincat_name = None
-
-    #for c in categories:
-        #maincat_name = c[1]
-        #for sc in c[2]:
-        #    maincat_name = c[1]
-            #if sc[0] == subcat_id:
-                #subcat_name = sc[1]
-
-    print("looking for articles:")
+    cat_name = su.wu.name_for_wiki_cat_id(cat_id)
 
     #html = [u'<h3 class="page-title">Wiki > %s > %s</h3>' % (maincat_name, subcat_name)]
-    html = [u'<h3 class="page-title">Wiki > %s</h3>' % (maincat_name)]
+    assert isinstance(cat_name, basestring)
+    html = [u'<h3 class="page-title">Wiki > %s</h3>' % cat_name]
     r = su.redis_conn
-    articles = r.lrange('wiki_cat_articles_' + cat_id, 0, 999)
+    articles = r.lrange('wiki_category_articles_' + cat_id, 0, 999)
 
     html += u'<p>%d articles:</p>\n<ul class="category-page-list">' % len(articles)
 
@@ -240,6 +231,10 @@ def wiki_new_article():
     if len(article_name) == 0:
         return wiki_cat(cat_id, site_message="No article name given.")
 
+    category_name = su.wu.name_for_wiki_cat_id(cat_id)
+    if category_name is None:
+        return wiki_cat(cat_id, site_message="Invalid category.")
+
     bad_chars = _safe_wiki_article_slug(article_slug)
     if bad_chars is not None:
         bad_slug_message = u"Sorry, these characters are not allowed in an article slug: %s" % u" ".join(bad_chars)
@@ -250,17 +245,20 @@ def wiki_new_article():
         bad_cat_message = u"Sorry, these characters are not allowed in an article name: %s" % u" ".join(bad_chars)
         return wiki_cat(cat_id, site_message=bad_cat_message)
 
-    #print("OK, we have a good article: %s %s" % (article_slug, article_name))
+    print("OK, we have a good article: %s %s" % (article_slug, article_name))
 
     default_text = """**%s** (New article)""" % article_name
     r = su.redis_conn
     article_id = str(uuid.uuid4())
-    art_key = 'wiki_article_%s' % article_id
-    r.set(art_key, default_text)
-    r.set('wiki_slug_%s' % article_slug, article_id)
-    r.set('wiki_article_slug_%s' % article_id, article_slug)
-    r.set('wiki_article_title_%s' % article_id, article_name)
-    r.lpush("wiki_cat_articles_%s" % cat_id, article_id)
+    su.wu.create_wiki_article(cat_id, article_slug, article_name, default_text)
+
+    #
+    # art_key = 'wiki_article_%s' % article_id
+    # r.set(art_key, default_text)
+    # r.set('wiki_slug_%s' % article_slug, article_id)
+    # r.set('wiki_article_slug_%s' % article_id, article_slug)
+    # r.set('wiki_article_title_%s' % article_id, article_name)
+    # r.lpush("wiki_category_articles_%s" % cat_id, article_id)
 
     return wiki(article_slug)
 
@@ -281,22 +279,15 @@ def add_wiki_category():
     cat_form = request.forms
     assert isinstance(cat_form, FormsDict)
     cat_name = cat_form.category_name
-    parent_cat_id = cat_form.parent
 
-    print("Add_wiki_category page got: ", cat_name, parent_cat_id)
+    print("add_category page got: ", cat_name)
     bad_cat_message = None
 
     cat_name = cat_name.strip()
-    try:
-        parent_cat_as_uuid = uuid.UUID(parent_cat_id)
-    except ValueError as e:
-        bad_cat_message = "Invalid parent category ID"
-
     bad_chars = _safe_wiki_category_name(cat_name)
 
     if bad_chars is not None:
         bad_cat_message = u"Sorry, these characters are not allowed: %s" % u" ".join(bad_chars)
-
 
     if bad_cat_message is None:
         wiki_root_id = wu.wiki_root_category()
@@ -313,6 +304,56 @@ def add_wiki_category():
     }
 
     return template('templates/admin', context)
+
+@wiki_app.post('/wiki/add_subcategory')
+def add_wiki_subcategory():
+
+    su = SiteUtils()
+    wu = su.wu
+    user_info = su.check_auth_cookie(request)
+
+    if user_info is None:
+        abort(403, "Forbidden")
+    if user_info[1] is False:  # superuser?
+        abort(403, "Forbidden")
+
+    # form is defined in admin.tpl
+    cat_form = request.forms
+    assert isinstance(cat_form, FormsDict)
+    cat_name = cat_form.category_name
+    parent_cat_id = cat_form.parent
+
+    print("add_subcategory page got: ", cat_name, parent_cat_id)
+    bad_cat_message = None
+
+    cat_name = cat_name.strip()
+    try:
+        parent_cat_as_uuid = uuid.UUID(parent_cat_id)
+    except ValueError as e:
+        bad_cat_message = "Invalid parent category ID"
+
+    bad_chars = _safe_wiki_category_name(cat_name)
+
+    if bad_chars is not None:
+        bad_cat_message = u"Sorry, these characters are not allowed: %s" % u" ".join(bad_chars)
+
+    if bad_cat_message is None:
+        wiki_root_id = wu.wiki_root_category()
+        wu.create_wiki_category(wiki_root_id, cat_name)
+    else:
+        print("Create category failed: %s" % bad_cat_message)
+
+    context = {
+        'title': u"Admin - Newcastle Makerspace",
+        'menu': su.menu('sel_admin', user_info, nav_style='default'),
+        'user_message': su.user_greeting(user_info),
+        'site_message': bad_cat_message,
+        'wiki_categories': su.wiki_index()
+    }
+
+    return template('templates/admin', context)
+
+
 
 #
 # @wiki_app.post('/wiki/add_subcategory')

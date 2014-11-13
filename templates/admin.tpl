@@ -21,7 +21,7 @@
     </div>
 </div>
 
-<h4 class='page-title'>Add user</h4>  <!-- todo need css for all this -->
+<h4 class='page-title'>Add user</h4>
 <div id='newuser'>
     <p></p>
     <div id="newuser_form_container">
@@ -54,7 +54,7 @@
 	</div>
 </div>
 
-<h4 class='page-title'>Add wiki article category</h4>  <!-- todo need css for all this -->
+<h4 class='page-title'>Add wiki root category</h4>
 <div id='wiki_cat'>
     <p></p>
     <div id="wiki_cat_form_container">
@@ -75,36 +75,4 @@
 	</div>
 </div>
 
-<h4 class='page-title'>Add wiki article sub-category</h4>  <!-- todo need css for all this -->
-<div id='wiki_subcat'>
-    <p></p>
-    <div id="wiki_subcat_form_container">
-		<form id="add_wiki_subcategory" class="wiki-form"  method="post" action="/wiki/add_subcategory">
-            <ul>
-
-                <li >
-                    <label class="description" for="username">Category</label>
-                    <div>
-                        <select id="main_category" name="main_category" >
-                          %if wiki_categories is not None:
-                            %for cat in wiki_categories:
-                              <option value="{{cat[0]}}">{{cat[1]}}</option>
-                          %end
-                        </select>
-                    </div>
-                </li>
-                <li >
-                    <label class="description" for="subcategory_name">Subcategory name</label>
-                    <div>
-                        <input id="subcategory_name" name="subcategory_name" class="element text medium" type="text" maxlength="255" value=""/>
-                    </div>
-                </li>
-                <li class="buttons">
-                    <input type="hidden" name="form_id" value="568743" />
-                    <input id="save_wiki_subcat_form" class="ncms_buttons" type="submit" name="submit" value="Add" />
-                </li>
-            </ul>
-		</form>
-	</div>
-</div>
 

@@ -11,8 +11,11 @@ from wiki_utils import WikiUtils
 
 class SiteUtils(object):
 
-    def __init__(self):
-        self.redis_conn = self.connect_redis()
+    def __init__(self, redis_connection=None):
+        if redis_connection is None:
+            self.redis_conn = self.connect_redis()
+        else:
+            self.redis_conn = redis_connection
         self.wu = WikiUtils(self.redis_conn)
         self._check_db_version()  # will create initial data if missing
 
@@ -29,7 +32,7 @@ class SiteUtils(object):
         self.redis_conn.set('User_Pwd_%s' % username, hex_dig)
 
     def _init_wiki(self):
-
+        #print("Wiki init **************************************************************")
         root_id = self.wu.create_wiki_root_category()
 
         default_text = """***Root article"""
@@ -49,8 +52,8 @@ NB: unit tests look for this text.
         article_slug = 'Badgers'
         article_name = "Test Page About Badgers"
 
-        self.wu.create_wiki_category(root_id, "Test Category B")
-        self.wu.create_wiki_article(root_id, article_slug, article_name, default_text)
+        subcat_id = self.wu.create_wiki_category(root_id, "Wildlife")
+        self.wu.create_wiki_article(subcat_id, article_slug, article_name, default_text)
 
     def _init_superuser(self):
         self.redis_conn.delete('mkrspc_superusers')
@@ -238,40 +241,26 @@ NB: unit tests look for this text.
                 return 'Hi ' + links
         else:
             return None
-    #
-    # def create_wiki_page(self, slug, title, body):
-    #     r = self.redis_conn
-    #     article_id = str(uuid.uuid4())
-    #     art_key = 'wiki_article_%s' % article_id
-    #     r.set(art_key, body)
-    #     r.set('wiki_slug_%s' % slug, article_id)
-    #     r.set('wiki_article_slug_%s' % article_id, slug)
-    #     r.set('wiki_article_title_%s' % article_id, title)
-    #
-    # def create_wiki_category(self, cat_name):
-    #     r = self.redis_conn
-    #     cat_id = str(uuid.uuid4())
-    #     cat_key = "wiki_cat_%s" % cat_id
-    #     r.set(cat_key, cat_name)
-    #     r.lpush("wiki_cats", cat_key)
-    #     return cat_id
 
     def wiki_index(self):
-        r = self.redis_conn
-        cat_keys = r.lrange("wiki_cats", 0, 99)
-        cats = []
-        for cat_key in cat_keys:
-            cat = r.get(cat_key)
-            #print(cat_key, cat)
-            subcats_key = "wiki_subcats_%s" % cat_key
-            subcat_keys = r.lrange(subcats_key, 0, 99)
-            subcats = []
-            for sc_key in subcat_keys:
-                subcat = r.get(sc_key)
-                #print(" - sub %s %s" % (sc_key, subcat))
-                subcats.append((sc_key, subcat,))
 
-            cats.append((cat_key, cat, subcats))
+        root = self.wu.wiki_root_category()
+        root_cats = self.wu.wiki_categories_in_category(root)
+
+        cats = []
+        for cat_key in root_cats:
+            cat = self.wu.name_for_wiki_cat_id(cat_key)
+            article_keys = self.wu.wiki_articles_in_category(cat_key)
+            articles = []
+            subcat_keys = self.wu.wiki_categories_in_category(cat_key)
+
+            subcats = subcat_keys
+            for art_key in article_keys:
+                slug = self.wu.wiki_article_slug(art_key)
+                title = self.wu.wiki_article_title(art_key)
+                articles.append((slug, title))
+
+            cats.append((cat_key, cat, articles, subcats))
 
         return cats
 

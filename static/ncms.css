@@ -145,11 +145,11 @@ div.adr {
 
 .page-title {
     padding: 5px 10px;
-    background: #000;
+    background: #801a00;
 }
 
 #page-content {
-    background: rgba(16,16,16,0.8);
+  // already set by #page?  background: rgba(16,16,16,0.8);
 }
 
 #content {
@@ -157,7 +157,7 @@ div.adr {
 }
 
 #content h1, #content h2, #content h3, #content h4, #content h5, #content h6 {
-    background: #000;
+    background: #801a00;
     padding: 0.2em 0.5em 0.1em;
 }
 
@@ -240,10 +240,12 @@ body.wiki #page-content {
     margin-right: 0px;
     margin-top: 2em;
     padding: 0.6em;
+
 }
 
 #wiki_article {
     padding-left: 1em;
+    background: rgba(16,16,16,0.8);
 }
 
 a.wiki_internal {
@@ -251,19 +253,20 @@ a.wiki_internal {
     text-decoration: underline;
 }
 
-a.wiki_index  {
+ul.wiki_index li a {
     font-weight: normal;
+    font-size: 75%;
 }
 
 ul.wiki_index {
     list-style-type: none;
     padding: 0.5em;
-    margin-top: 0.33em;
+    margin-top: 0em;
     margin-left: 1em;
 }
 
 ul.wiki_index li {
-    margin-top: 0.5em;
+    margin-top: 0em;
 }
 
 ul.category-page-list {
@@ -294,7 +297,7 @@ form.wiki-form ul li{
 
 #navigation ul.menu_wiki li {
     margin-right: 0.5em;
-    padding: 0.2em 0em 0em 0em;
+    padding: 0.1em 0em 0em 0em;
     font-weight: bold;
 }
 
