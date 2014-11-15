@@ -26,11 +26,6 @@ class SiteUtils(object):
         assert isinstance(r, redis.Redis)
         return r
 
-    def make_user(self, username, password):
-        hash_object = hashlib.sha256(auth_salt_secret + password)
-        hex_dig = hash_object.hexdigest()
-        self.redis_conn.set('User_Pwd_%s' % username, hex_dig)
-
     def _init_wiki(self):
         #print("Wiki init **************************************************************")
         root_id = self.wu.create_wiki_root_category()
@@ -77,6 +72,11 @@ NB: unit tests look for this text.
             self._init_wiki()
         return db_version
 
+    def make_user(self, username, password):
+        hash_object = hashlib.sha256(auth_salt_secret + password)
+        hex_dig = hash_object.hexdigest()
+        self.redis_conn.set('User_Pwd_%s' % username, hex_dig)
+
     def user_exists(self, user):
         r = self.redis_conn
         user_passwd_record = r.get('User_Pwd_%s' % user)
@@ -85,22 +85,35 @@ NB: unit tests look for this text.
         else:
             return False
 
+    def change_user_password(self, username, old_passwd, new_password):
+        if self._compare_password(username, old_passwd):
+            hash_object = hashlib.sha256(auth_salt_secret + new_password)
+            hex_dig = hash_object.hexdigest()
+            self.redis_conn.set('User_Pwd_%s' % username, hex_dig)
+
     def do_login(self, user, passwd):
+        r = self.redis_conn
+        if self._compare_password(user, passwd):
+            # The password is valid, so create a token.
+            token = str(uuid.uuid4())
+            # Store token in Redis. (Valid for 1000 milli-fortnights.)
+            r.setex(('User_Auth_Cookie_%s' % token), user, 60 * 60 * 24 * 14)
+            # Return token to be set as a cookie.
+            return token
+        else:
+            return None
+
+    def _compare_password(self, user, entered_password):
         r = self.redis_conn
         user_passwd_record = r.get('User_Pwd_%s' % user)
         if user_passwd_record is not None:
-            hash_object = hashlib.sha256(auth_salt_secret + passwd)
+            hash_object = hashlib.sha256(auth_salt_secret + entered_password)
             hex_dig = hash_object.hexdigest()
             #print(hex_dig)
             if hex_dig == user_passwd_record:
-                # The passwords match OK, so create a token.
-                token = str(uuid.uuid4())
-                # Store token in Redis. (Valid for 1000 milli-fortnights.)
-                r.setex(('User_Auth_Cookie_%s' % token), user, 60 * 60 * 24 * 14)
-                # Return token to be set as a cookie.
-                return token
+                return True
             else:
-                return None
+                return False
 
     def take_backup(self):
 
