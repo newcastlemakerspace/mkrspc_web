@@ -321,4 +321,29 @@ GET        /admin_do_backup               admin_do_backup"""
         self.assertEqual("200 OK", response.status)
 
 
+    def test_wiki_category_page_depth_1(self):
 
+        wildlife_cat_id = self._add_root_wiki_cat("Wildlife")
+        art_id = self.wu.create_wiki_article(wildlife_cat_id, "Quokkas", "Quokkas", "###Quokkas (WIP)")
+
+        response = self.app.get("/wiki/category/%s" % art_id)
+
+        assert isinstance(response, TestResponse)
+        self.assertEqual("200 OK", response.status)
+        self.assertNotIn('0 articles', response.body)
+        self.assertIn('href="/wiki/category/%s"' % wildlife_cat_id, response.body)
+
+
+    def test_wiki_category_page_depth_2(self):
+
+        wildlife_subcat_id = self._add_root_wiki_cat("Wildlife")
+        marsups_subcat_id = self.wu.create_wiki_category(wildlife_subcat_id, "Marsupials")
+        art_id = self.wu.create_wiki_article(marsups_subcat_id, "Quolls", "Quolls", "###Quolls (WIP)")
+
+        response = self.app.get("/wiki/category/%s" % art_id)
+
+        assert isinstance(response, TestResponse)
+        self.assertEqual("200 OK", response.status)
+        self.assertNotIn('0 articles', response.body)
+        self.assertIn('href="/wiki/category/%s"' % marsups_subcat_id, response.body)
+        self.assertIn('href="/wiki/category/%s"' % wildlife_subcat_id, response.body)

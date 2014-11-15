@@ -172,7 +172,8 @@ def wiki_cat(cat_id, site_message=None):
         'user_message': su.user_greeting(user_info),
         'wiki_index': categories,
         'site_message': site_message,
-        'category_id': cat_id
+        'category_id': cat_id,
+        'category_name': cat_name
     }
 
     return template('templates/wiki_cat', context)
