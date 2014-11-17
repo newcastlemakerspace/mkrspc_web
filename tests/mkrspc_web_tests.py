@@ -24,7 +24,7 @@ class MkrspcWebTest(TestCase):
         self.su = SiteUtils(redis_connection=self.r)
         self.wu = self.su.wu
 
-    def test_all_routes_present(self):
+    def test_site_all_routes_present(self):
         """The point of all this is to preserve bookmarked URLs."""
         text = []
         columns_header = "%-10s %-30s %s" % ("Method", "Rule", "Callback")
@@ -54,6 +54,8 @@ GET        /about                         about
 GET        /admin                         admin
 GET        /logout                        logout
 POST       /login                         login_post
+GET        /user_profile                  user_page
+POST       /change_password               change_password
 POST       /admin_add_user                admin_add_user
 GET        /admin_do_backup               admin_do_backup"""
 
@@ -65,11 +67,11 @@ GET        /admin_do_backup               admin_do_backup"""
         self.assertEqual(keycount, 18)
         # 2 users, superuser list, wiki root id, wiki root name, articles, subcats..
 
-    def test_static_config(self):
+    def test_site_static_config(self):
         import os
         self.assertTrue(os.path.exists(static_files_root))
 
-    def test_index(self):
+    def test_site_index(self):
         response = self.app.get("/")
         assert isinstance(response, TestResponse)
         self.assertEqual("200 OK", response.status)
@@ -78,7 +80,7 @@ GET        /admin_do_backup               admin_do_backup"""
         # login form should be visible if not logged in
         self.assertIn("<h3 class='page-title'>Member login</h3>", response.body)
 
-    def test_about(self):
+    def test_site_about(self):
         response = self.app.get("/about")
         assert isinstance(response, TestResponse)
         self.assertEqual("200 OK", response.status)
@@ -197,7 +199,7 @@ GET        /admin_do_backup               admin_do_backup"""
         self.assertEqual("200 OK", response.status)
         self.assertIn("Backup successful.", response.body)
 
-    def test_create_category_direct(self):
+    def test_wiki_create_category_direct(self):
         cat_name = "TestCategory"
         wiki_root_cat_id = self.wu.wiki_root_category()
         print "Wiki root id is: %s" % wiki_root_cat_id
@@ -209,7 +211,7 @@ GET        /admin_do_backup               admin_do_backup"""
 
         self.assertIn(cat_name, existing_cat_names)
 
-    def test_create_category_via_page(self):
+    def test_wiki_create_category_via_page(self):
         self._do_admin_login()
         # check admin page
         response = self.app.get("/admin")
@@ -227,7 +229,7 @@ GET        /admin_do_backup               admin_do_backup"""
 
         self.assertIn(cat_name, existing_cat_names)
 
-    def test_create_subcategory_via_page(self):
+    def test_wiki_create_subcategory_via_page(self):
         self._do_admin_login()
         # check admin page
         response = self.app.get("/admin")
@@ -245,7 +247,7 @@ GET        /admin_do_backup               admin_do_backup"""
 
         self.assertIn(cat_name, existing_cat_names)
 
-    def test_create_subcategory_via_page_bad_id(self):
+    def test_wiki_create_subcategory_via_page_bad_id(self):
         self._do_admin_login()
         # check admin page
         response = self.app.get("/admin")
@@ -288,13 +290,12 @@ GET        /admin_do_backup               admin_do_backup"""
         articles = self.wu.wiki_articles_in_category(new_cat_id)
         self.assertEqual(len(articles), 1)
 
-
     def _add_root_wiki_cat(self, cat_name):
         wiki_root_cat_id = self.wu.wiki_root_category()
         subcat_id = self.wu.create_wiki_category(wiki_root_cat_id, cat_name)
         return subcat_id
 
-    def test_zebra_wiki_index(self):
+    def test_wiki_index(self):
 
         space_subcat_id = self._add_root_wiki_cat("Space Travel")
         lunar_art_id = self.wu.create_wiki_article(space_subcat_id, "LunarBadgers", "Lunar Badgers", "###Moon badgers!! (WIP)")
@@ -320,19 +321,17 @@ GET        /admin_do_backup               admin_do_backup"""
         assert isinstance(response, TestResponse)
         self.assertEqual("200 OK", response.status)
 
-
     def test_wiki_category_page_depth_1(self):
 
         wildlife_cat_id = self._add_root_wiki_cat("Wildlife")
         art_id = self.wu.create_wiki_article(wildlife_cat_id, "Quokkas", "Quokkas", "###Quokkas (WIP)")
 
-        response = self.app.get("/wiki/category/%s" % art_id)
+        response = self.app.get("/wiki/category/%s" % wildlife_cat_id)
 
         assert isinstance(response, TestResponse)
         self.assertEqual("200 OK", response.status)
         self.assertNotIn('0 articles', response.body)
         self.assertIn('href="/wiki/category/%s"' % wildlife_cat_id, response.body)
-
 
     def test_wiki_category_page_depth_2(self):
 
@@ -340,10 +339,45 @@ GET        /admin_do_backup               admin_do_backup"""
         marsups_subcat_id = self.wu.create_wiki_category(wildlife_subcat_id, "Marsupials")
         art_id = self.wu.create_wiki_article(marsups_subcat_id, "Quolls", "Quolls", "###Quolls (WIP)")
 
-        response = self.app.get("/wiki/category/%s" % art_id)
+        response = self.app.get("/wiki/category/%s" % marsups_subcat_id)
 
         assert isinstance(response, TestResponse)
         self.assertEqual("200 OK", response.status)
         self.assertNotIn('0 articles', response.body)
-        self.assertIn('href="/wiki/category/%s"' % marsups_subcat_id, response.body)
         self.assertIn('href="/wiki/category/%s"' % wildlife_subcat_id, response.body)
+
+        # todo - This fails because parent category is not shown in 'breadcrumb' yet.
+        self.assertIn('href="/wiki/category/%s"' % marsups_subcat_id, response.body)
+
+    def test_user_page(self):
+
+        response = self.app.post("/login", params={'username': 'alice', 'password': 'puppies'})
+        assert isinstance(response, TestResponse)
+        self.assertEqual("302 Found", response.status)
+        response = response.follow()
+        self.assertEqual("200 OK", response.status)
+
+        response = self.app.get("/user_profile")
+        assert isinstance(response, TestResponse)
+        self.assertEqual("200 OK", response.status)
+        self.assertIn('Change password', response.body)
+
+    def test_user_change_password_page(self):
+
+        # do login first
+        response = self.app.post("/login", params={'username': 'alice', 'password': 'puppies'})
+        assert isinstance(response, TestResponse)
+        self.assertEqual("302 Found", response.status)
+        response = response.follow()
+        self.assertEqual("200 OK", response.status)
+
+        form_entry = {
+            'old_password': 'puppies',
+            'new_password': 'badgers',
+            'confirm_password': 'badgers'
+        }
+
+        response = self.app.post("/change_password", params=form_entry)
+
+        self.assertEqual("200 OK", response.status)
+        self.assertIn('Password change was successful.', response.body)

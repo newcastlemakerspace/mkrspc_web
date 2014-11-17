@@ -44,7 +44,9 @@ class WikiUtils(object):
         return self.wiki_categories_in_category(wiki_root_id)
 
     def name_for_wiki_cat_id(self, cat_id):
-        cat_name = self.r.get("wiki_category_name_%s" % cat_id)
+        key = "wiki_category_name_%s" % cat_id
+        #print("name_for_wiki_cat_id = %s" % key)
+        cat_name = self.r.get(key)
         return cat_name
 
     def create_wiki_article(self, cat_id, slug, title, body):

@@ -107,6 +107,59 @@ def login_post():
         return index(message="Login failed, invalid username or password.")
 
 
+@app.get('/user_profile')
+@view('templates/user_profile')
+def user_page(site_message=None):
+    su = page_init()
+
+    user_info = su.check_auth_cookie(request)
+    if user_info is None:
+        abort(403, "Forbidden")
+
+    context = {
+        'title': "Administration - Newcastle Makerspace",
+        'menu': su.menu(None, user_info),
+        'site_message': site_message,
+        'user_message': su.user_greeting(user_info),
+        'wiki_edits_log': [],
+        'user_name': user_info[0]
+    }
+
+    return context
+
+
+@app.post('/change_password')
+def change_password():
+    su = page_init()
+
+    user_info = su.check_auth_cookie(request)
+    if user_info is None:
+        abort(403, "Forbidden")
+
+    user_name = user_info[0]
+
+    paswd_form = request.forms
+    assert isinstance(paswd_form, FormsDict)
+
+    old_pass = paswd_form.old_password
+    new_pass = paswd_form.new_password
+    confirm_pass = paswd_form.confirm_new_password
+    print(new_pass, ' vs ', confirm_pass)
+
+    if new_pass != confirm_pass:
+        return user_page(site_message="Passwords do not match.")
+
+    if not su._compare_password(user_name, old_pass):
+        return user_page(site_message="Password incorrect.")
+
+    su.change_user_password(user_name, old_pass, new_pass)
+
+    if not su._compare_password(user_name, new_pass):
+        return user_page(site_message="Password change failed for an unknown reason. Please contact an administrator.")
+
+    return user_page(site_message="Password change was successful.")
+
+
 @app.post('/admin_add_user')
 def admin_add_user():
     su = page_init()

@@ -29,6 +29,11 @@ a {
 h1, h2, h3, h4, h5, h6 {
 }
 
+table, th, td {
+    border: 2px solid rgb(11, 75, 131);
+    border-collapse: collapse;
+}
+
 /* Layout stuff */
 #page {
     margin: 2em auto;

@@ -224,15 +224,23 @@ NB: unit tests look for this text.
                     %(home)s
                     %(about)s
                     %(wiki)s
+                    %(profile)s
                     %(admin)s
                 </ul>
                 """
 
         replacements = dict()
         replacements['nav_style'] = 'menu_%s' % nav_style
-        if user_info and user_info[1] is True:
+
+        if user_info:
             assert isinstance(user_info, tuple)
             assert len(user_info) == 2
+            assert isinstance(user_info[0], basestring)
+            replacements['profile'] = _menu_entry('Profile', '/user_profile', 'fa-user', 'sel_profile', selected, nav_style)
+        else:
+            replacements['profile'] = ''
+
+        if user_info and user_info[1] is True:
             replacements['admin'] = _menu_entry('Admin', '/admin', 'fa-cog', 'sel_admin', selected, nav_style)
         else:
             replacements['admin'] = ''
