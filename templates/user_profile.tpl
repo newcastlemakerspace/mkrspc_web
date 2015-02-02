@@ -8,7 +8,7 @@
     </p>
     <h3>Change password</h3>
     <div id="form_container">
-        <form id="member_login" class="loginform"  method="post" action="/change_password">
+        <form id="member_login" class="loginform" method="post" action="/change_password">
         <ul >
             <li>
                 <label class="description" for="old_password">Old password</label>
@@ -35,6 +35,30 @@
         </ul>
         </form>
     </div>
+
+    <h3>Upload image</h3>
+    <div id="form_container_2">
+        <form action="/image_upload" class="loginform" method="post" enctype="multipart/form-data">
+            <ul >
+                <li>
+                    <label class="description" for="caption">Caption</label>
+                    <div>
+                        <input class="element text medium" type="text" name="caption" />
+                    </div>
+                </li>
+                <li>
+                    <label class="description" for="upload">Select file</label>
+                    <div>
+                        <input class="element text medium" type="file" name="upload" />
+                    </div>
+                </li>
+                <li class="buttons">
+                    <input class="ncms_buttons" type="submit" value="Upload" />
+                </li>
+            </ul>
+        </form>
+        </div>
+
     <h3>Wiki Edit History (WIP)</h3>
     <table width="100%">
         <tr><th width="12.5%">Timestamp</th><th width="20%">Page</th><th width="12.5%">Action</th><th width="*">Comment</th></tr>

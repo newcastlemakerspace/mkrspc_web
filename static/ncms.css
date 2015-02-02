@@ -7,7 +7,7 @@ body {
     height: 100%;
     padding: 0em;
     font-family: "Fira Sans", "Open Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
-    background: #000000 url('/static/background.png') bottom repeat-x fixed;
+    background: #051615 url('/static/background.png') bottom repeat-x fixed;
     margin: 0px;
     color: #cccccc;
     text-rendering: optimizeLegibility;
@@ -40,7 +40,7 @@ table, th, td {
     max-width: 960px;
     // max-width: 1600px;
     padding: 1.2em;
-    background: rgba(16,16,16,0.8);
+    background: rgba(16,13,19,0.75);
 }
 
 /* Navigation stuff */
@@ -64,7 +64,7 @@ table, th, td {
 }
 
 #navigation a {
-    color: DarkOrange;
+    color: #EF9914;
 }
 
 #navigation ul li.sibling :hover,
@@ -75,21 +75,9 @@ table, th, td {
 }
 
 #navigation ul li.sibling {
-    color: DarkOrange;
-    text-shadow: 2px 2px 2px #B24700;
+    text-shadow: 2px 2px 2px #8E6143;
     font-size: 1.1em;
-    //font-weight: normal;
 }
-
-/*
-#navigation ul li.sibling a,
-#navigation ul li.sibling i.fa {
-color: DarkOrange;
-//text-shadow: 2px 2px 2px #B24700;
-//font-size: 1.1em;
-//font-weight: normal;
-}
- */
 
 #navigation ul li.selected a,
 #navigation ul li.selected i.fa {
@@ -98,27 +86,56 @@ color: DarkOrange;
     font-size: 1.1em;
 }
 
-/*
-#navigation ul li.selected i.fa {
-color: Azure;
-text-shadow: 3px 3px 2px Grey;
+div.site-message-error {
+    color: Red;
+    padding: 0.8em;
+    font-weight: 600;
+    font-size: 120%;
+    background: #444444;
+    border: 2px solid;
+    border-radius: 5px;
+    margin-bottom: 1.5em;
 }
- */
 
-div.site-message {
+div.site-message-success {
+    color: Chartreuse;
+    padding: 0.8em;
+    font-weight: 600;
+    background: #222222;
+    border: 2px solid;
+    border-radius: 5px;
+    margin-bottom: 1.5em;
+}
+
+div.site-message-info {
+    color: #009fda;
+    padding: 0.8em;
+    font-weight: 600;
+    background: #222222;
+    border: 2px solid;
+    border-radius: 5px;
+    margin-bottom: 1.5em;
+}
+
+div.site-message-validation {
     color: DarkOrange;
     padding: 0.8em;
     font-weight: 600;
-    background: #444444;
+    background: #222222;
+    border: 2px solid;
+    border-radius: 5px;
+    margin-bottom: 1.5em;
 }
 
 
 /* HEADER STUFF */
 
 #site-name {
-    margin: 10px 0px 0px 0px;
+    margin: 0px;
+    margin-right: 20px;
+    padding: 0.1em;
     color: #ffffff;
-    text-shadow: 3px 3px 6px #666666;
+    text-shadow: 3px 3px 6px #99aa99;
     font-size: 1.8em;
 }
 
@@ -138,6 +155,7 @@ div.site-message {
     color: #ffffff;
     text-shadow: 1px 1px 2px #444444;
     font-size: 0.8em;
+    padding: 0.5em;
 }
 
 div.adr {
@@ -149,8 +167,9 @@ div.adr {
 /* CONTENT STUFF */
 
 .page-title {
-    padding: 5px 10px;
-    background: #801a00;
+    padding: 0.25em 1.0em;
+    background: #9e2000;
+    clear: both;
 }
 
 #page-content {
@@ -162,7 +181,7 @@ div.adr {
 }
 
 #content h1, #content h2, #content h3, #content h4, #content h5, #content h6 {
-    background: #801a00;
+    background: #9e2000;
     padding: 0.2em 0.5em 0.1em;
 }
 
@@ -174,20 +193,18 @@ div.adr {
 
 /* forms */
 
-#member_login li {
-    //list-style-type: none;
-    padding: 1 em;
-    margin-top: 20px;
-}
-
 form.loginform ul {
     list-style-type: none;
-    padding: 1 em;
-    margin-top: 20px;
+    padding-left: 1em;
+    margin-top: 0.5em;
 }
 
 form.loginform ul li.buttons{
-    padding: 1 em;
+    padding: 1em;
+    margin-top: 1em;
+}
+
+form.loginform ul li{
     margin-top: 1em;
 }
 

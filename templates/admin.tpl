@@ -8,9 +8,8 @@
 
 <h4 class='page-title'>Run backup</h4>
 <div id='backup'>
-    <p></p>
     <div id="backup_form_container">
-        <form action="/admin_do_backup" class="loginform" method="get">
+        <form action="/admin_do_backup" class="wiki-form" method="get">
             <ul>
                 <li>
                     <input class="ncms_buttons" type="submit" value="Backup"
@@ -23,9 +22,8 @@
 
 <h4 class='page-title'>Add user</h4>
 <div id='newuser'>
-    <p></p>
     <div id="newuser_form_container">
-		<form id="add_member" class="loginform"  method="post" action="/admin_add_user">
+		<form id="add_member" class="wiki-form"  method="post" action="/admin_add_user">
             <ul>
                 <li id="li_1" >
                     <label class="description" for="newusername">Username</label>
@@ -56,7 +54,6 @@
 
 <h4 class='page-title'>Add wiki root category</h4>
 <div id='wiki_cat'>
-    <p></p>
     <div id="wiki_cat_form_container">
 		<form id="add_wiki_category" class="wiki-form" method="post" action="/wiki/add_category">
             <ul>

@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <head xmlns="http://www.w3.org/1999/html">
     <meta charset="utf-8" />
@@ -27,8 +29,17 @@
 
         <div id="page-content">
 
+<%
+from models.site_message import SiteMessage
+%>
+
             %if site_message is not None:
-                <div class="site-message"><i class="fa fa-exclamation-triangle"></i> {{!site_message}}</div>
+                %if isinstance(site_message, basestring):
+                    <div class="broken_site_message"><i class="fa fa-exclamation-circle"></i> ::FIX THIS SITE MESSAGE:: <img src="FIXME_404_for_logs.png"/> {{!site_message}}</div>
+                %end
+                %if isinstance(site_message, SiteMessage):
+                    <div class="{{site_message.css_class}}"><i class="fa {{site_message.icon}}"></i> {{!site_message.message}}</div>
+                %end
             %end
 
             {{!base}}
