@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <title>{{title}}</title>
     <link rel="stylesheet" type="text/css" href="/static/ncms.css">
-    <link rel="stylesheet" href="/static/font-awesome-4.1.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/static/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="http://code.cdn.mozilla.net/fonts/fira.css">
 </head>
 
