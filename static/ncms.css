@@ -252,8 +252,14 @@ body.wiki #page-content {
     padding-left: 1em;
 }
 
-a.wiki_internal {
-    text-decoration: underline;
+body.wiki #wiki_article a::after {
+  font-family: FontAwesome;
+  content: " \f08e";
+  font-size: 80%;
+}
+
+body.wiki #wiki_article a.wiki_internal::after {
+  content: '';
 }
 
 ul.wiki_index li a {
@@ -280,6 +286,14 @@ ul.category-page-list {
 h4.wiki_index {
     margin-top: 1.5em;
     margin-bottom: 0em;
+}
+
+#wiki_subcat .help-text .category-name {
+  font-weight: bold;
+}
+
+#wiki_subcat .help-text .category-id {
+  color: #444;
 }
 
 form.wiki-form ul {

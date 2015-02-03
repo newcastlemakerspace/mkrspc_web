@@ -6,7 +6,7 @@
 %if editable == True:
 <h4 class="page-title">Add wiki article</h4>  <!-- todo need css for all this -->
 <div id="wiki_subcat">
-    <p>Article will be created in category {{category_name}} [{{category_id}}].</p>
+    <div class="help-text">Article will be created in category <span class="category-name">{{category_name}}</span> <span class="category-id">[{{category_id}}]</span>.</div>
     <form id="wiki_new_article" class="wiki-form"  method="post" action="/wiki/new_article">
         <input type="hidden" name="form_id" value="6846541" />
         <input type="hidden" name="article_cat_id" value="{{category_id}}"/>
