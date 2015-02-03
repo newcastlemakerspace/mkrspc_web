@@ -8,6 +8,8 @@ from bottle import FormsDict
 
 from site_utils import SiteUtils
 
+from models.site_message import SiteMessage, SM_ERROR, SM_VALIDATION_FAIL, SM_SUCCESS, SM_NOTIFY
+
 wiki_app = Bottle()
 
 
@@ -114,6 +116,10 @@ def wiki_edit_page(slug):
         #md = markdown.Markdown(extensions=['wikilinks(base_url=/wiki/,html_class=mkrspc_wiki)'])
         #html = markdown.markdown(md_src, ['wikilinks(base_url=/wiki/)'])
         html = '<h4 class="page-title">Editing article: "%s" (%s)</h4>' % (art_title, art_slug)
+
+
+    if site_message is not None:
+        sm = SiteMessage(site_message, SM_VALIDATION_FAIL)
 
     context = {
         'title': "Wiki - Newcastle Makerspace",
@@ -246,20 +252,10 @@ def wiki_new_article():
         bad_cat_message = u"Sorry, these characters are not allowed in an article name: %s" % u" ".join(bad_chars)
         return wiki_cat(cat_id, site_message=bad_cat_message)
 
-    print("OK, we have a good article: %s %s" % (article_slug, article_name))
+    #print("OK, we have a good article: %s %s" % (article_slug, article_name))
 
     default_text = """**%s** (New article)""" % article_name
-    r = su.redis_conn
-    article_id = str(uuid.uuid4())
     su.wu.create_wiki_article(cat_id, article_slug, article_name, default_text)
-
-    #
-    # art_key = 'wiki_article_%s' % article_id
-    # r.set(art_key, default_text)
-    # r.set('wiki_slug_%s' % article_slug, article_id)
-    # r.set('wiki_article_slug_%s' % article_id, article_slug)
-    # r.set('wiki_article_title_%s' % article_id, article_name)
-    # r.lpush("wiki_category_articles_%s" % cat_id, article_id)
 
     return wiki(article_slug)
 
@@ -281,7 +277,7 @@ def add_wiki_category():
     assert isinstance(cat_form, FormsDict)
     cat_name = cat_form.category_name
 
-    print("add_category page got: ", cat_name)
+    #print("add_category page got: ", cat_name)
     bad_cat_message = None
 
     cat_name = cat_name.strip()
@@ -309,6 +305,9 @@ def add_wiki_category():
 @wiki_app.post('/wiki/add_subcategory')
 def add_wiki_subcategory():
 
+    class SubcatCreateException(Exception):
+        pass
+
     su = SiteUtils()
     wu = su.wu
     user_info = su.check_auth_cookie(request)
@@ -327,22 +326,37 @@ def add_wiki_subcategory():
     print("add_subcategory page got: ", cat_name, parent_cat_id)
     bad_cat_message = None
 
-    cat_name = cat_name.strip()
     try:
-        parent_cat_as_uuid = uuid.UUID(parent_cat_id)
-    except ValueError as e:
-        bad_cat_message = "Invalid parent category ID"
 
-    bad_chars = _safe_wiki_category_name(cat_name)
+        cat_name = cat_name.strip()
+        try:
+            parent_cat_as_uuid = uuid.UUID(parent_cat_id)
+        except ValueError as e:
+            fail_message = "Invalid parent category ID."
+            raise SubcatCreateException(fail_message)
 
-    if bad_chars is not None:
-        bad_cat_message = u"Sorry, these characters are not allowed: %s" % u" ".join(bad_chars)
+        parent_cat_name = wu.name_for_wiki_cat_id(parent_cat_as_uuid)
 
-    if bad_cat_message is None:
+        print("PArent cat: ", parent_cat_name)
+        if parent_cat_name is None:
+            fail_message = u"The specified parent category does not exist."
+            raise SubcatCreateException(fail_message)
+
+        bad_chars = _safe_wiki_category_name(cat_name)
+        if bad_chars is not None:
+            fail_message = u"Sorry, these characters are not allowed: %s" % u" ".join(bad_chars)
+            raise SubcatCreateException(fail_message)
+
         wiki_root_id = wu.wiki_root_category()
         wu.create_wiki_category(wiki_root_id, cat_name)
-    else:
-        print("Create category failed: %s" % bad_cat_message)
+        print("Created OK")
+
+    except SubcatCreateException as e:
+        print("Failed, invalid inputs: %s" % e.message)
+        bad_cat_message = e.message
+
+    except Exception as e:
+        print("Failed (general error: %s" % e.message)
 
     context = {
         'title': u"Admin - Newcastle Makerspace",

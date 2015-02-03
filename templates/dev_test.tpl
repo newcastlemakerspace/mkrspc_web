@@ -1,11 +1,18 @@
 % page_type = "front"
 % rebase('templates/mkrspc_front_base.tpl')
 
-<h2 class='page-title'>User profile - {{user_name}}</h2>
+<h2 class='page-title'>Dev test page</h2>
 <div id='content'>
-    <p>
-        Hi {{user_name}}, this is your user page.
-    </p>
+
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc sollicitudin vestibulum lectus eu ornare. In feugiat tincidunt nunc egestas venenatis. Duis convallis sit amet nulla id sagittis. Donec pulvinar pulvinar hendrerit. Curabitur mollis nisi ut gravida eleifend. Aenean vulputate felis in ex sagittis, id facilisis massa molestie. Duis ante nisi, tincidunt in dolor in, tincidunt eleifend justo.</p>
+
+    <p>Pellentesque condimentum mauris vitae ligula dignissim, id vehicula felis interdum. Donec interdum, urna vel finibus aliquam, felis tellus pretium dolor, et ullamcorper est risus ac lectus. Curabitur accumsan lectus eu justo fermentum, ut aliquet nunc vehicula. Praesent eu est cursus, mollis enim a, luctus massa. Nunc in nisl sit amet magna ultrices malesuada. Aliquam molestie libero sit amet felis efficitur, eget varius justo accumsan. Vivamus imperdiet feugiat nunc id ullamcorper. Suspendisse in eleifend erat. Integer nec massa accumsan mauris sollicitudin lacinia ut non sem. In faucibus mi libero, nec condimentum nisl rutrum ac. Vivamus facilisis enim quis ornare hendrerit. Nullam elementum nisi vitae metus dapibus, eget rhoncus nisl aliquam. Donec pretium tellus tincidunt libero ornare, sed aliquam ipsum porta. Duis nunc quam, mattis ultrices interdum et, ultricies quis lectus. Aliquam auctor eros ac neque sodales, id posuere diam gravida.</p>
+
+    <div class="site-message-error"><i class="fa fa-exclamation-triangle"></i> A terrible error occurred!</div>
+    <div class="site-message-success"><i class="fa fa-check-circle"></i> All good.</div>
+    <div class="site-message-info"><i class="fa fa-circle-o"></i> The robot insurrection will begin in 1024 seconds.</div>
+    <div class="site-message-validation"><i class="fa fa-question-circle"></i> Dunno if that looks right?</div>
+
     <h3>Change password</h3>
     <div id="form_container">
         <form id="member_login" class="loginform" method="post" action="/change_password">

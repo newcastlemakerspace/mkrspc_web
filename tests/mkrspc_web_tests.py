@@ -25,7 +25,7 @@ class MkrspcWebTest(TestCase):
         self.wu = self.su.wu
 
     def test_site_all_routes_present(self):
-        """The point of all this is to preserve bookmarked URLs."""
+        """Besides being a regression test, this is a reminder to preserve bookmarked URLs."""
         text = []
         columns_header = "%-10s %-30s %s" % ("Method", "Rule", "Callback")
         print columns_header
@@ -57,7 +57,9 @@ POST       /login                         login_post
 GET        /user_profile                  user_page
 POST       /change_password               change_password
 POST       /admin_add_user                admin_add_user
-GET        /admin_do_backup               admin_do_backup"""
+GET        /admin_do_backup               admin_do_backup
+POST       /image_upload                  do_upload
+GET        /dev_test                      dev_test_page"""
 
         self.assertEqual(previously_generated_text, current_text)
 
@@ -160,8 +162,13 @@ GET        /admin_do_backup               admin_do_backup"""
 
     def test_admin_page(self):
         self._do_admin_login()
-        # check admin page
         response = self.app.get("/admin")
+        assert isinstance(response, TestResponse)
+        self.assertEqual("200 OK", response.status)
+
+    def test_test_page(self):
+        self._do_admin_login()
+        response = self.app.get("/dev_test")
         assert isinstance(response, TestResponse)
         self.assertEqual("200 OK", response.status)
 
@@ -213,10 +220,6 @@ GET        /admin_do_backup               admin_do_backup"""
 
     def test_wiki_create_category_via_page(self):
         self._do_admin_login()
-        # check admin page
-        response = self.app.get("/admin")
-        assert isinstance(response, TestResponse)
-        self.assertEqual("200 OK", response.status)
         cat_name = "TestCategory"
         wiki_root_cat_id = self.wu.wiki_root_category()
         print "Wiki root id is: %s" % wiki_root_cat_id
@@ -231,10 +234,6 @@ GET        /admin_do_backup               admin_do_backup"""
 
     def test_wiki_create_subcategory_via_page(self):
         self._do_admin_login()
-        # check admin page
-        response = self.app.get("/admin")
-        assert isinstance(response, TestResponse)
-        self.assertEqual("200 OK", response.status)
         cat_name = "TestCategory"
         wiki_root_cat_id = self.wu.wiki_root_category()
         print "Wiki root id is: %s" % wiki_root_cat_id
@@ -247,22 +246,23 @@ GET        /admin_do_backup               admin_do_backup"""
 
         self.assertIn(cat_name, existing_cat_names)
 
-    def test_wiki_create_subcategory_via_page_bad_id(self):
+    def test_wiki_create_subcategory_with_bad_parent_id(self):
         self._do_admin_login()
-        # check admin page
-        response = self.app.get("/admin")
-        assert isinstance(response, TestResponse)
-        self.assertEqual("200 OK", response.status)
         cat_name = "TestCategoryZ"
         cat_id = "notarealuuid"
-        response = self.app.post("/wiki/add_category", params={'category_name': cat_name, 'parent': cat_id})
+        response = self.app.post("/wiki/add_subcategory", params={'category_name': cat_name, 'parent': cat_id})
+        self.assertIn("Invalid parent category ID", response)
+
+    def test_wiki_create_subcategory_with_nonexisting_parent_id(self):
+        self._do_admin_login()
+        cat_name = "TestCategoryZ"
+        cat_id = str(uuid.uuid4())
+        response = self.app.post("/wiki/add_subcategory", params={'category_name': cat_name, 'parent': cat_id})
+        print response.body
+        self.assertIn(u"The specified parent category does not exist.", response)
 
     def test_wiki_new_article_in_category(self):
         self._do_admin_login()
-        # check admin page
-        response = self.app.get("/admin")
-        assert isinstance(response, TestResponse)
-        self.assertEqual("200 OK", response.status)
         cat_name = "CategoryA"
         root_cat_id = self.wu.wiki_root_category()
         new_cat_id = self.wu.create_wiki_category(root_cat_id, cat_name)
@@ -374,7 +374,7 @@ GET        /admin_do_backup               admin_do_backup"""
         form_entry = {
             'old_password': 'puppies',
             'new_password': 'badgers',
-            'confirm_password': 'badgers'
+            'confirm_new_password': 'badgers'
         }
 
         response = self.app.post("/change_password", params=form_entry)

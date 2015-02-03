@@ -86,14 +86,17 @@ NB: unit tests look for this text.
             return False
 
     def change_user_password(self, username, old_passwd, new_password):
-        if self._compare_password(username, old_passwd):
-            hash_object = hashlib.sha256(auth_salt_secret + new_password)
-            hex_dig = hash_object.hexdigest()
-            self.redis_conn.set('User_Pwd_%s' % username, hex_dig)
+        if self.compare_password(username, old_passwd):
+            self.set_user_password(username, new_password)
+
+    def set_user_password(self, username, new_password):
+        hash_object = hashlib.sha256(auth_salt_secret + new_password)
+        hex_dig = hash_object.hexdigest()
+        self.redis_conn.set('User_Pwd_%s' % username, hex_dig)
 
     def do_login(self, user, passwd):
         r = self.redis_conn
-        if self._compare_password(user, passwd):
+        if self.compare_password(user, passwd):
             # The password is valid, so create a token.
             token = str(uuid.uuid4())
             # Store token in Redis. (Valid for 1000 milli-fortnights.)
@@ -103,7 +106,7 @@ NB: unit tests look for this text.
         else:
             return None
 
-    def _compare_password(self, user, entered_password):
+    def compare_password(self, user, entered_password):
         r = self.redis_conn
         user_passwd_record = r.get('User_Pwd_%s' % user)
         if user_passwd_record is not None:
@@ -294,4 +297,27 @@ NB: unit tests look for this text.
             #"wiki_cat_%s" % str(uuid.uuid4())
         #r.set(cat_key, cat_name)
         #r.lpush("wiki_cats", cat_key)
+
+
+    def build_site_message_model(self, site_message):
+
+        message_model = object()
+        message_model.message_intent = "site-message"
+        message_model.message = site_message
+        message_model.icon = "fa-asterisk"
+
+        if site_message[0] == "!":
+            message_model.css_class = "site-message-fail"
+            message_model.message = site_message[1:]
+            message_model.icon = "fa-exclamation-triangle"
+        elif site_message[0] == "?":
+            message_model.css_class = "site-message-validation"
+            message_model.message = site_message[1:]
+            message_model.icon = "fa-question-circle"
+        elif site_message[0] == "*":
+            message_model.css_class = "site-message-success"
+            message_model.message = site_message[1:]
+            message_model.icon = "fa-check-circle"
+
+        return message_model
 
