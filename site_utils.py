@@ -87,9 +87,12 @@ NB: unit tests look for this text.
 
     def change_user_password(self, username, old_passwd, new_password):
         if self.compare_password(username, old_passwd):
-            hash_object = hashlib.sha256(auth_salt_secret + new_password)
-            hex_dig = hash_object.hexdigest()
-            self.redis_conn.set('User_Pwd_%s' % username, hex_dig)
+            self.set_user_password(username, new_password)
+
+    def set_user_password(self, username, new_password):
+        hash_object = hashlib.sha256(auth_salt_secret + new_password)
+        hex_dig = hash_object.hexdigest()
+        self.redis_conn.set('User_Pwd_%s' % username, hex_dig)
 
     def do_login(self, user, passwd):
         r = self.redis_conn
