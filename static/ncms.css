@@ -7,11 +7,16 @@ body {
     height: 100%;
     padding: 0em;
     font-family: "Fira Sans", "Open Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
-    background: #051615 url('/static/background.png') bottom repeat-x fixed;
+    background: #000 url('/static/background-copper.png') bottom repeat-x fixed;
     margin: 0px;
     color: #cccccc;
     text-rendering: optimizeLegibility;
 }
+
+body.wiki {
+    background: #051615 url('/static/background-blue.png') bottom repeat-x fixed;
+}
+
 
 a {
     color: #009FDA;
