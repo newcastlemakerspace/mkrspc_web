@@ -1,7 +1,7 @@
 % page_type = "front"
 % rebase('templates/mkrspc_front_base.tpl')
 
-<h2 class='page-title'>Home</h2>
+<h2 class='page-title' xmlns="http://www.w3.org/1999/html">Home</h2>
 <div id='content'>
 
 
@@ -10,9 +10,24 @@
     <h3>Meeting times:</h3>
 
     <p>
-        <strong>Every 1st, 3rd, and 5th Monday of the month</strong>, usually around 6pm, and <strong>every following Sunday</strong> of the month, usually around 10:30am.</p>
+        <strong>Everybody is welcome to attend our public meetings, which are held:</strong>
+            <ul>
+                <li>Every <strong>1st Sunday of the month</strong>, usually around 10:30am</li>
+                <li><strong>The Monday night of the next week</strong>, usually around 6pm.</li>
+                <li>On the <strong>3rd Sunday of the month</strong>, we will have a "Fix-It Day", and possibly a BBQ (starting around 10:30am)</li>
+            </ul>
+    </p>
 
-    <p>Organisation meetings at the first Sunday meeting of the month.</p>
+    <p>
+        <strong>The 2015 meeting schedule:</strong>
+        <ul>
+            <li><strike>Sunday 1st March</strike> - 10:00am - Musical 3.5" floppy drives</li>
+            <li>Monday 9th March - 6:30pm - Installing a TV for talks / demos / project visualisation</li>
+            <li>Sunday 15th March - 10:00am - TBA</li>
+            <li>&nbsp;</li>
+            <li>Sunday 5th April - 6:30pm - TBA</li>
+        </ul>
+    </p>
 
     <p>The space is open irregularly at other times.</p>
 
