@@ -52,6 +52,7 @@
 
     <p>You might also find some of us idling in the <code>#newcastle</code> channel on <code>irc.freenode.net</code>.</p>
 
+    <div style="clear:both;"></div>
 </div>
 
 % include('templates/mkrspc_login_block.tpl')
