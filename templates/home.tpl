@@ -24,9 +24,9 @@
             <li>Sunday 1st March - 10:00 AM - Musical 3.5" floppy drives</li>
             <li>Monday 9th March - 6:30 PM - Installing a TV for talks / demos / project visualisation</li>
             <li>&nbsp;</li>
-            <li>Sunday 5th April - 10:00 AM - Meetup</li>
-            <li>Monday 13th April - 6:30 PM - We need some volunteers for a demo or talk!</li>
-            <li>Sunday 19th April - 10:00 AM - Meetup</li>
+            <li>Sunday 5th April - 10:00 AM - Meetup - Raspberry Pi 'cluster'</li>
+            <li>Monday 13th April - 6:30 PM - Meetup - Saltstack on Raspberry Pi</li>
+            <li>Sunday 19th April - 10:00 AM - Meetup - 3D printing an adjustable Z-axis endstop</li>
             <li>&nbsp;</li>
             <li>Sunday 3rd May - 10:00 AM - Meetup</li>
             <li>Monday 11th May - 6:30 PM - We need some volunteers for a demo or talk!</li>
