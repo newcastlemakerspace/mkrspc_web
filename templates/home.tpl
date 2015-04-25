@@ -24,9 +24,13 @@
             <li><strike>Sunday 1st March</strike> - 10:00 AM - Musical 3.5" floppy drives</li>
             <li><strike>Monday 9th March</strike> - 6:30 PM - Installing a TV for talks / demos / project visualisation</li>
             <li>&nbsp;</li>
-            <li>Sunday 5th April - 10:00 AM - Meetup?</li>
+            <li>Sunday 5th April - 10:00 AM - Meetup</li>
             <li>Monday 13th April - 6:30 PM - We need some volunteers for a demo or talk!</li>
-            <li>Sunday 19th April - 10:00 AM - TBA</li>
+            <li>Sunday 19th April - 10:00 AM - Meetup</li>
+            <li>&nbsp;</li>
+            <li>Sunday 3rd May - 10:00 AM - Meetup</li>
+            <li>Monday 11th May - 6:30 PM - We need some volunteers for a demo or talk!</li>
+            <li>Sunday 17th May - 10:00 AM - Meetup</li>
 
         </ul>
     </p>
