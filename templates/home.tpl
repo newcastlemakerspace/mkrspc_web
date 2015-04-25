@@ -21,8 +21,8 @@
     <p>
         <strong>The 2015 meeting schedule:</strong>
         <ul>
-            <li><strike>Sunday 1st March</strike> - 10:00 AM - Musical 3.5" floppy drives</li>
-            <li><strike>Monday 9th March</strike> - 6:30 PM - Installing a TV for talks / demos / project visualisation</li>
+            <li>Sunday 1st March - 10:00 AM - Musical 3.5" floppy drives</li>
+            <li>Monday 9th March - 6:30 PM - Installing a TV for talks / demos / project visualisation</li>
             <li>&nbsp;</li>
             <li>Sunday 5th April - 10:00 AM - Meetup</li>
             <li>Monday 13th April - 6:30 PM - We need some volunteers for a demo or talk!</li>
