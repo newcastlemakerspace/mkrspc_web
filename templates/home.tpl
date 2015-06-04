@@ -31,6 +31,10 @@
             <li>Sunday 3rd May - 10:00 AM - Meetup</li>
             <li>Monday 11th May - 6:30 PM - We need some volunteers for a demo or talk!</li>
             <li>Sunday 17th May - 10:00 AM - Meetup</li>
+            <li>&nbsp;</li>
+            <li>Sunday 7th June - 10:00 AM - Meetup</li>
+            <li>Monday 15th June - 6:30 PM - We need some volunteers for a demo or talk!</li>
+            <li>Sunday 21st June - 10:00 AM - Meetup</li>
 
         </ul>
     </p>
