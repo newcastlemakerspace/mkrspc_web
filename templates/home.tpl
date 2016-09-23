@@ -56,8 +56,6 @@
 
     <p>We also have a <a href="https://www.facebook.com/groups/627261683965099">Facebook Group</a> that we post announcements and random things to.</p>
 
-    <p>There is a <a href="http://nclmakerspace.wordpress.com">Wordpress Blog</a> (which will eventually be migrated to this site).</p>
-
     <p>All our codez go in our <a href="http://github.com/newcastlemakerspace" target="_blank">Github repository </a>. Pull request away!</p>
 
     <p>You might also find some of us idling in the <code>#newcastle</code> channel on <code>irc.freenode.net</code>.</p>
