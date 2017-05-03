@@ -1,7 +1,7 @@
 % page_type = "front"
 % rebase('templates/mkrspc_front_base.tpl')
 
-<h2 class='page-title'>Home</h2>
+<h2 class='page-title' xmlns="http://www.w3.org/1999/html">Home</h2>
 <div id='content'>
 
 
@@ -9,9 +9,13 @@
 
     <h3>Meeting times:</h3>
 
+
     <p><strong>Roughly every 4th Wednesday of the month</strong>, starting at 7 PM.<strong></p>
     <p>Meetings are announced on <a href="https://www.meetup.com/Newcastle-Makerspace-Monthly-Meetup">meetup.com</a> and the <a href="http://newcastlelug.org/mailman/listinfo/makerspace_newcastlelug.org">mailing list</a>.</p>
+
     <p>The space is open irregularly at other times.</p>
+
+
 
     <h3>Contact and links</h3>
     <div id="osm-map">
@@ -27,13 +31,12 @@
 
     <p>We also have a <a href="https://www.facebook.com/groups/627261683965099">Facebook Group</a> that we post announcements and random things to.</p>
 
-    <p>There is a <a href="http://nclmakerspace.wordpress.com">Wordpress Blog</a> (which will eventually be migrated to this site).</p>
-
     <p>All our codez go in our <a href="http://github.com/newcastlemakerspace" target="_blank">Github repository </a>. Pull request away!</p>
 
     <p>You might also find some of us idling in the <code>#newcastle</code> channel on <code>irc.freenode.net</code>.</p>
 
     <div style="clear:both;"></div>
+    
 </div>
 
 % include('templates/mkrspc_login_block.tpl')

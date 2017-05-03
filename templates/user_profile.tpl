@@ -36,7 +36,7 @@
         </form>
     </div>
 
-    <h3>Upload image</h3>
+    <h3>Upload image - (WIP, don't use yet please.)</h3>
     <div id="form_container_2">
         <form action="/image_upload" class="loginform" method="post" enctype="multipart/form-data">
             <ul >
@@ -57,7 +57,7 @@
                 </li>
             </ul>
         </form>
-        </div>
+    </div>
 
     <h3>Wiki Edit History (WIP)</h3>
     <table width="100%">
