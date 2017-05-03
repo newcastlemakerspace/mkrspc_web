@@ -9,13 +9,9 @@
 
     <h3>Meeting times:</h3>
 
-    <p>
-        <strong>Every 1st, 3rd, and 5th Monday of the month</strong>, usually around 6pm, and <strong>every following Sunday</strong> of the month, usually around 10:30am.</p>
-
-    <p>Organisation meetings at the first Sunday meeting of the month.</p>
-
+    <p><strong>Roughly every 4th Wednesday of the month</strong>, starting at 7 PM.<strong></p>
+    <p>Meetings are announced on <a href="https://www.meetup.com/Newcastle-Makerspace-Monthly-Meetup">meetup.com</a> and the <a href="http://newcastlelug.org/mailman/listinfo/makerspace_newcastlelug.org">mailing list</a>.</p>
     <p>The space is open irregularly at other times.</p>
-
 
     <h3>Contact and links</h3>
     <div id="osm-map">
