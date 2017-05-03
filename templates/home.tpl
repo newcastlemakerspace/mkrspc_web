@@ -9,37 +9,12 @@
 
     <h3>Meeting times:</h3>
 
-    <p>
-        <strong>Everybody is welcome to attend our public meetings, which are held:</strong>
-            <ul>
-                <li>Every <strong>1st Sunday of the month</strong>, usually around 10:30am</li>
-                <li><strong>The Monday night of the next week</strong>, usually around 6pm.</li>
-                <li>On the <strong>3rd Sunday of the month</strong>, we will have a "Fix-It Day", and possibly a BBQ (starting around 10:30am)</li>
-            </ul>
-    </p>
 
-    <p>
-        <strong>The 2015 meeting schedule:</strong>
-        <ul>
-            <li>Sunday 1st March - 10:00 AM - Musical 3.5" floppy drives</li>
-            <li>Monday 9th March - 6:30 PM - Installing a TV for talks / demos / project visualisation</li>
-            <li>&nbsp;</li>
-            <li>Sunday 5th April - 10:00 AM - Meetup - Raspberry Pi 'cluster'</li>
-            <li>Monday 13th April - 6:30 PM - Meetup - Saltstack on Raspberry Pi</li>
-            <li>Sunday 19th April - 10:00 AM - Meetup - 3D printing an adjustable Z-axis endstop</li>
-            <li>&nbsp;</li>
-            <li>Sunday 3rd May - 10:00 AM - Meetup</li>
-            <li>Monday 11th May - 6:30 PM - We need some volunteers for a demo or talk!</li>
-            <li>Sunday 17th May - 10:00 AM - Meetup</li>
-            <li>&nbsp;</li>
-            <li>Sunday 7th June - 10:00 AM - Meetup</li>
-            <li>Monday 15th June - 6:30 PM - We need some volunteers for a demo or talk!</li>
-            <li>Sunday 21st June - 10:00 AM - Meetup</li>
-
-        </ul>
-    </p>
+    <p><strong>Roughly every 4th Wednesday of the month</strong>, starting at 7 PM.<strong></p>
+    <p>Meetings are announced on <a href="https://www.meetup.com/Newcastle-Makerspace-Monthly-Meetup">meetup.com</a> and the <a href="http://newcastlelug.org/mailman/listinfo/makerspace_newcastlelug.org">mailing list</a>.</p>
 
     <p>The space is open irregularly at other times.</p>
+
 
 
     <h3>Contact and links</h3>
@@ -61,6 +36,7 @@
     <p>You might also find some of us idling in the <code>#newcastle</code> channel on <code>irc.freenode.net</code>.</p>
 
     <div style="clear:both;"></div>
+    
 </div>
 
 % include('templates/mkrspc_login_block.tpl')
