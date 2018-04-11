@@ -53,6 +53,11 @@ def wiki(slug):
     if user_info is not None:
         editable = True
 
+    if user_info is None:
+        showlogin = True
+    else:
+        showlogin = False
+
     r = su.redis_conn
     art_id = r.get('wiki_slug_' + slug)
 
@@ -76,6 +81,7 @@ def wiki(slug):
         'main_content': html,
         'allow_edit': editable,
         'user_message': su.user_greeting(user_info),
+        'show_login_form': showlogin,
         'site_message': site_message,
         'wiki_index': categories,
         'slug': art_slug,

@@ -31,6 +31,3 @@
     <div style="clear:both;"></div>
     
 </div>
-
-% include('templates/mkrspc_login_block.tpl')
-

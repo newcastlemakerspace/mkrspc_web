@@ -40,6 +40,7 @@
                 %end
             </ul>
         </div> <!-- wiki-index -->
+
     </div> <!-- side-nav -->
     <div id="page-content">
 
@@ -49,6 +50,9 @@
 
         {{!base}}
 
+    % include('templates/mkrspc_login_block.tpl')
+
     </div> <!-- page content -->
+
 </body>
 </html>
