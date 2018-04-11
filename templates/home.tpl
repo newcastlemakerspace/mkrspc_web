@@ -16,7 +16,6 @@
     
     <p>Meetings are announced on <a href="https://www.meetup.com/Newcastle-Makerspace-Monthly-Meetup">meetup.com</a>, the <a href="http://newcastlelug.org/mailman/listinfo/makerspace_newcastlelug.org">mailing list</a>, and via the <a href="https://www.facebook.com/groups/627261683965099">Facebook Group</a>.</p>
 
-    <div style="clear:both;"></div>
 
     <h2>Contact and links</h2>
 
