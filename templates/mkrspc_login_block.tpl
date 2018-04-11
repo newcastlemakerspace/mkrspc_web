@@ -1,7 +1,7 @@
 %if show_login_form:
     <div id='login'>
-        <h3 class='login-title'>Member login</h3>  <!-- todo need css for all this -->
-        <p></p>
+        <h3 class='login-title'>Member login</h3>
+
         <div id="form_container">
     		<form id="member_login" class="loginform"  method="post" action="/login">
             <ul >

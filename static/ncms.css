@@ -357,3 +357,29 @@ form.wiki-form ul li{
     margin-right: 1em;
 }
 
+div#login h3.login-title {
+    padding: 0 1em;
+    margin: 0;
+    text-align: right
+}
+
+div#login form.loginform ul {
+    text-align: right;
+}
+
+div#login form.loginform ul li {
+    margin-top: 0;
+    margin-left: 1em;
+    display: inline-block;
+}
+
+div#login form.loginform ul li input.text {
+    background: #222;
+    color: #ccc;
+    border: #009FDA 1px solid;
+    padding: 0.3em;
+}
+
+div#login form.loginform ul li input#saveForm {
+    margin: 0;
+}
